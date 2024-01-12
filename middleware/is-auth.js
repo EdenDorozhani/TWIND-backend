@@ -4,7 +4,7 @@ module.exports = (req, res, next) => {
   const token = req.headers.authorization;
   if (!token) {
     return res.json({
-      error: { code: 401, message: "User not authenticated" },
+      error: { code: 500, message: "User not authenticated" },
     });
   }
 
@@ -26,7 +26,7 @@ module.exports = (req, res, next) => {
     }
   } else {
     return res.json({
-      error: { code: 401, message: "User not authenticated" },
+      error: { code: 500, message: "User not authenticated" },
     });
   }
 };

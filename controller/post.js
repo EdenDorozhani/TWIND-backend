@@ -27,7 +27,7 @@ const updateLikes = async (keyWord, body, id, userId, obj, res) => {
 
 exports.updatePostLikes = async (req, res) => {
   const keyWord = req.body.keyWord;
-  const userId = req.body.uupdatePostLikesserId;
+  const userId = req.body.userId;
   const postId = req.body.postId;
   updateLikes(keyWord, req.body, postId, userId, new PostsLikes(), res);
 };
@@ -81,6 +81,23 @@ exports.getComments = async (req, res) => {
   );
 };
 
+exports.deleteComment = async (req, res) => {
+  const { identifier } = req.query;
+  try {
+    await new Comment().deleteData(identifier);
+    res.json(
+      new Response(
+        true,
+        `comment with id:${identifier} has been deleted successfully`,
+        identifier
+      )
+    );
+  } catch (err) {
+    let response = new Response(false, err.message);
+    res.status(500).send(response);
+  }
+};
+
 exports.getReplies = async (req, res) => {
   const userLoggedIn = req.userLoggedIn;
   const page = req.query.page;
@@ -96,13 +113,15 @@ exports.getReplies = async (req, res) => {
   );
   res.json(
     new Response(true, "replies are fetched successfully", {
-      data: response[0],
+      replies: response[0],
       module: "replies",
+      page: +page,
     })
   );
 };
 
 exports.getPostsLikes = async (req, res) => {
+  const userLoggedIn = req.userLoggedIn;
   const page = req.query.page;
   const pageSize = +req.query.pageSize;
   const offset = +page * pageSize - pageSize;
@@ -112,7 +131,12 @@ exports.getPostsLikes = async (req, res) => {
     "postsLikes.postId"
   );
   const count = countResponse[0][0]["COUNT(*)"];
-  const response = await new PostsLikes().getLikes(postId, pageSize, offset);
+  const response = await new PostsLikes().getLikes(
+    postId,
+    pageSize,
+    offset,
+    userLoggedIn
+  );
   const likes = response[0];
   res.json(
     new Response(true, "likes are fetched successfully", {
@@ -124,8 +148,9 @@ exports.getPostsLikes = async (req, res) => {
 };
 
 exports.getCommentsLikes = async (req, res) => {
+  const userLoggedIn = req.userLoggedIn;
   const page = req.query.page;
-  const pageSize = req.query.pageSize;
+  const pageSize = +req.query.pageSize;
   const offset = +page * pageSize - pageSize;
   const commentId = req.query.identifier;
   const countResponse = await new CommentLikes().getCount(
@@ -136,7 +161,8 @@ exports.getCommentsLikes = async (req, res) => {
   const response = await new CommentLikes().getCommentsLikes(
     commentId,
     pageSize,
-    offset
+    offset,
+    userLoggedIn
   );
   const likes = response[0];
   res.json(

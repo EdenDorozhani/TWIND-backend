@@ -5,16 +5,45 @@ module.exports = class Profile extends Model {
   getProfilePostsData(username, pageSize, offset) {
     let sql = `SELECT posts.*, 
         COUNT(postsLikes.likeId) as likeCount,
-        COUNT(comments.commentId) AS comments
+        (SELECT COUNT(*)
+        FROM comments
+        WHERE comments.postId = posts.postId) AS comments
         FROM posts 
         LEFT JOIN users ON posts.creatorId = users.userId
         LEFT JOIN postsLikes ON posts.postId = postsLikes.postId
-        LEFT JOIN comments ON comments.postId = posts.postId
         WHERE users.username = ?
         GROUP BY posts.postId
         ORDER BY posts.createdAt DESC 
         LIMIT ${+pageSize} 
         OFFSET ${+offset}`;
     return db.execute(sql, [username]);
+  }
+
+  getUserData(username, userId, userLoggedIn) {
+    let sql = `SELECT users.*,
+    (SELECT COUNT(*) FROM followers WHERE followers.followerId = ?) as followersCount,
+    IFNULL(SUM(CASE WHEN followers.followerId = ? THEN 1 ELSE 0 END), 0) AS followedByUser
+    FROM users 
+    LEFT JOIN followers ON users.userId = followers.followerId 
+    WHERE users.username = ?
+    GROUP BY users.userId,followers.followId
+    `;
+    return db.execute(sql, [userId, userLoggedIn, username]);
+  }
+
+  getFollowers(id, userLoggedIn, orderBy, pageSize, offset, value) {
+    let sql = `
+    SELECT followers.*, users.userImgURL, users.username,
+    IFNULL(SUM(CASE WHEN followers.followerId = ${userLoggedIn} THEN 1 ELSE 0 END), 0) AS followedByUser
+    FROM followers
+    LEFT JOIN users ON users.userId = followers.followingId
+    WHERE followers.followerId = ${id} ${
+      value ? `AND users.username LIKE '${value}%'` : ""
+    }
+    GROUP BY followers.followId
+    ORDER BY ${orderBy} DESC
+    LIMIT ${pageSize} OFFSET ${offset};
+`;
+    return db.execute(sql);
   }
 };

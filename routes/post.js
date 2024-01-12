@@ -17,4 +17,6 @@ router.post("/postComment", isAuth, postController.postComment);
 
 router.post("/updateCommentLikes", isAuth, postController.updateCommentLikes);
 
+router.delete("/deleteComment", isAuth, postController.deleteComment);
+
 module.exports = router;

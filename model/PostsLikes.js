@@ -5,18 +5,17 @@ module.exports = class PostsLikes extends Post {
   tableName = "postsLikes";
   primaryKey = "likeId";
   dbColumns = ["userId", "postId"];
+  foreignKey = "postId";
 
-  getRecord(userLoggedIn, postId) {
-    return db.execute(
-      `SELECT * FROM ${this.tableName} WHERE userId = ${userLoggedIn} AND postId = ${postId}`
-    );
-  }
-
-  getLikes(postId, pageSize, offset) {
-    let sql = `SELECT users.*, postsLikes.likeId
+  getLikes(postId, pageSize, offset, userLoggedIn) {
+    let sql = `SELECT users.*, postsLikes.likeId,
+    IFNULL(SUM(CASE WHEN followers.followerId = ? THEN 1 ELSE 0 END), 0) AS followedByUser
     FROM postsLikes 
      LEFT JOIN users ON users.userId = postsLikes.userId
-     WHERE postsLikes.postId = ? LIMIT ? OFFSET ?`;
-    return db.query(sql, [postId, pageSize, offset]);
+     LEFT JOIN followers ON followers.followingId = postsLikes.userId
+     WHERE postsLikes.postId = ? 
+     GROUP BY users.userId, postsLikes.likeId
+     LIMIT ? OFFSET ?;`;
+    return db.query(sql, [userLoggedIn, postId, pageSize, offset]);
   }
 };

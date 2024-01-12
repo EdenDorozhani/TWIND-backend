@@ -5,22 +5,17 @@ module.exports = class CommentLikes extends Comment {
   tableName = "commentLikes";
   primaryKey = "likeId";
   dbColumns = ["userId", "commentId"];
+  foreignKey = "commentId";
 
-  getRecord(userLoggedIn, commentId) {
-    return db.execute(
-      `SELECT * FROM ${this.tableName} WHERE userId = ${userLoggedIn} AND commentId = ${commentId}`
-    );
-  }
-
-  getCommentsLikes(commentId, pageSize, offset) {
-    let sql = `SELECT users.*, commentLikes.likeId
+  getCommentsLikes(commentId, pageSize, offset, userLoggedIn) {
+    let sql = `SELECT users.*, commentLikes.likeId,
+    IFNULL(SUM(CASE WHEN followers.followerId = ? THEN 1 ELSE 0 END), 0) AS followedByUser
     FROM commentLikes 
      LEFT JOIN users ON users.userId = commentLikes.userId
-     WHERE commentLikes.commentId = ? LIMIT ? OFFSET ?`;
-    return db.query(sql, [
-      commentId,
-      parseInt(pageSize, 10),
-      parseInt(offset, 10),
-    ]);
+     LEFT JOIN followers ON followers.followingId = commentLikes.userId
+     WHERE commentLikes.commentId = ?
+     GROUP BY users.userId, commentLikes.likeId
+     LIMIT ? OFFSET ?`;
+    return db.query(sql, [userLoggedIn, commentId, pageSize, offset]);
   }
 };

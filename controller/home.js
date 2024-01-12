@@ -86,6 +86,7 @@ exports.updatePost = async (req, res) => {
 
 exports.deletePost = async (req, res) => {
   const { identifier } = req.query;
+  console.log(identifier);
   try {
     await new Post().deleteData(identifier);
     res.json(

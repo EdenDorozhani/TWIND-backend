@@ -6,11 +6,20 @@ class Model {
   tableName = "";
   primaryKey = "";
   dbColumns = [];
+  foreignKey = "";
 
   formatFormData(formData) {
     return this.dbColumns.reduce(
       (acc, curr) => ({ ...acc, [curr]: formData[curr] }),
       {}
+    );
+  }
+
+  getRecord(userLoggedIn, identifier, column = null) {
+    return this.db.execute(
+      `SELECT * FROM ${this.tableName} WHERE ${
+        column ? column : "userId"
+      } = ${userLoggedIn} AND ${this.foreignKey} = ${identifier}`
     );
   }
 

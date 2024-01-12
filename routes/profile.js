@@ -16,6 +16,8 @@ router.get(
 
 router.get("/getProfileUserData", isAuth, profileController.getProfileUserData);
 
+router.get("/getFollowers", isAuth, profileController.getFollowers);
+
 router.post(
   "/editProfile",
   isAuth,
@@ -36,5 +38,7 @@ router.post(
   changeEmailValidationSchema,
   profileController.changeEmail
 );
+
+router.post("/postFollower", isAuth, profileController.postFollower);
 
 module.exports = router;

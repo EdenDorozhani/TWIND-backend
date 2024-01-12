@@ -22,12 +22,16 @@ module.exports = class Post extends Model {
 
   getSinglePost = (postId, userLoggedIn) => {
     let sql = `
-    SELECT posts.*, users.username, users.userImgURL, COUNT(postsLikes.likeId) AS likes,
-    IFNULL(SUM(CASE WHEN postsLikes.userId = ${userLoggedIn} THEN 1 ELSE 0 END), 0) AS likedByUser
+    SELECT posts.*, users.username, users.userImgURL, COUNT(DISTINCT postsLikes.likeId) AS likes,
+    MAX(CASE WHEN postsLikes.userId = ${userLoggedIn} THEN "1" ELSE 0 END) AS likedByUser,
+    MAX(CASE WHEN followers.followerId = ${userLoggedIn} THEN "1" ELSE 0 END) AS followedByUser
     FROM posts
     LEFT JOIN users ON posts.creatorId = users.userId
     LEFT JOIN postsLikes ON posts.postId = postsLikes.postId
+    LEFT JOIN followers ON posts.creatorId = followers.followingId 
     WHERE posts.postId = ${postId}
+    GROUP BY
+    posts.postId, users.userId;
   `;
     return db.execute(sql);
   };
