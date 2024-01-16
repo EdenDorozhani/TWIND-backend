@@ -33,6 +33,55 @@ class Model {
     return this.db.query(sql, [field]);
   };
 
+  getPostsData(username, pageSize, offset) {
+    let sql = `SELECT posts.*, 
+        COUNT(postsLikes.likeId) as likeCount,
+        (SELECT COUNT(*)
+        FROM comments
+        WHERE comments.postId = posts.postId) AS comments
+        FROM posts 
+        LEFT JOIN users ON posts.creatorId = users.userId
+        LEFT JOIN postsLikes ON posts.postId = postsLikes.postId
+        ${username ? `WHERE users.username = ?` : ""}
+        GROUP BY posts.postId
+        ORDER BY posts.createdAt DESC 
+        LIMIT ${+pageSize} 
+        OFFSET ${+offset}`;
+    return this.db.execute(sql, [username]);
+  }
+
+  getUsers(id, userLoggedIn, orderBy, pageSize, offset, value) {
+    let sql = `
+    SELECT DISTINCT followers.*, users.userImgURL, users.username,
+    CASE WHEN EXISTS (
+    SELECT 1
+    FROM followers AS subFollowers
+    WHERE subFollowers.followerId = ${userLoggedIn}
+      AND subFollowers.followingId = followers.followingId
+  ) THEN 1 ELSE 0 END AS followedByUser,
+  (
+    SELECT COUNT(*)
+    FROM followers AS countFollowers
+    INNER JOIN users AS countUsers ON countUsers.userId = countFollowers.followingId
+   ${
+     id
+       ? `WHERE countFollowers.followerId = ${id}`
+       : `WHERE NOT countFollowers.followingId = ${userLoggedIn}`
+   } ${value ? `AND countUsers.username LIKE '${value}%'` : ""}
+  ) AS filteredCount
+    FROM followers
+    INNER JOIN users ON users.userId = followers.followingId
+    ${
+      id
+        ? `WHERE followers.followerId = ${id}`
+        : `WHERE NOT followers.followingId = ${userLoggedIn}`
+    } ${value ? `AND users.username LIKE '${value}%'` : ""}
+    ORDER BY ${orderBy} DESC
+    LIMIT ${pageSize} OFFSET ${offset};
+    `;
+    return this.db.execute(sql);
+  }
+
   getOne = (field, value, callback) => {
     let sql = `SELECT * FROM ${this.tableName} WHERE ?? = ?`;
     return this.db.query(sql, [field, value], callback);

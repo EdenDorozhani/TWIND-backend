@@ -5,12 +5,13 @@ const User = require("../model/User");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const Follower = require("../model/Follower");
+const Model = require("../model/Model");
 
 exports.getProfilePostsData = async (req, res) => {
   const { identifier, pageSize, page } = req.query;
   const offset = page * pageSize - pageSize;
   try {
-    const profilePostsResponse = await new Profile().getProfilePostsData(
+    const profilePostsResponse = await new Model().getPostsData(
       identifier,
       pageSize,
       offset
@@ -25,6 +26,7 @@ exports.getProfilePostsData = async (req, res) => {
       "posts.creatorId"
     );
     const count = postsCount[0][0]["COUNT(*)"];
+    console.log(count);
     res.json(
       new Response(true, "data fetched successfully", {
         data: profilePosts,
@@ -55,10 +57,18 @@ exports.getProfileUserData = async (req, res) => {
 };
 
 exports.editProfile = async (req, res) => {
+  const prefixToRemove = "http://localhost:3131/";
   const userLoggedIn = req.body.userId;
-  const userImgURL = req.files?.userImgURL?.[0].path;
+  const file = req.files?.userImgURL?.[0].path;
+  const imageUrl = req.body.userImgURL;
   const errors = validationResult(req);
-  const image = userImgURL ? userImgURL : req.body.userImgURL;
+  let url;
+  if (!!imageUrl && imageUrl.startsWith(prefixToRemove)) {
+    url = imageUrl.substring(prefixToRemove.length);
+  } else {
+    url = imageUrl;
+  }
+  const image = file ? file : url;
   const obj = { ...req.body, userImgURL: image };
   try {
     if (!errors.isEmpty()) {
@@ -137,7 +147,7 @@ exports.getFollowers = async (req, res) => {
   const offset = +page * pageSize - pageSize;
   const profileId = req.query.identifier;
   const searchValue = req.query.value;
-  const response = await new Profile().getFollowers(
+  const response = await new Model().getUsers(
     profileId,
     userLoggedIn,
     "followId",
@@ -145,7 +155,6 @@ exports.getFollowers = async (req, res) => {
     offset,
     searchValue
   );
-  console.log(response);
   res.json(
     new Response(true, "followers are fetched successfully", {
       data: response[0],

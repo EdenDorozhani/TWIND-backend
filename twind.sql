@@ -57,7 +57,7 @@ CREATE TABLE `comments` (
   `reply` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`commentId`),
   UNIQUE KEY `commentId_UNIQUE` (`commentId`)
-) ENGINE=InnoDB AUTO_INCREMENT=306 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=307 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -66,7 +66,7 @@ CREATE TABLE `comments` (
 
 LOCK TABLES `comments` WRITE;
 /*!40000 ALTER TABLE `comments` DISABLE KEYS */;
-INSERT INTO `comments` VALUES (261,26,47,'EDEN','2024-01-04T16:48:58.667Z',NULL),(262,26,47,'DOROZHANI','2024-01-04T16:49:03.945Z',NULL),(263,26,47,'@edorozhani 1','2024-01-04T16:49:09.373Z','262'),(264,26,47,'@edorozhani 2','2024-01-04T16:49:14.548Z','261'),(265,26,47,'@edorozhani dwadad','2024-01-05T11:03:45.400Z','262'),(266,26,47,'jkihwandawbdawbudahwdbawdbawbdwahdbahbdahbdhaibdaiudbaiaidbakdbajibdwaibdawinajibnawidbnwaidbnawda','2024-01-05T18:57:44.325Z',NULL),(269,26,47,'@edorozhani dwadadadadad','2024-01-09T13:10:21.866Z','262'),(270,26,47,'@edorozhani dwadada','2024-01-09T13:38:06.339Z','262'),(271,26,47,'@edorozhani dwadadawd','2024-01-09T14:03:27.348Z','261'),(272,26,47,'@edorozhani dwadwadwadwa','2024-01-09T14:03:33.740Z','261'),(273,26,47,'awdawdawdawd','2024-01-09T14:16:52.999Z',NULL),(274,26,47,'dwadadawd','2024-01-09T14:19:16.047Z',NULL),(275,26,45,'wdawdwadwad','2024-01-10T09:35:56.593Z',NULL),(277,26,45,'@edorozhani dwadadawd','2024-01-10T09:36:01.409Z','276'),(278,26,45,'@edorozhani dwadadawdawd','2024-01-10T09:36:04.269Z','276'),(290,26,45,'wdadawdawd','2024-01-10T10:17:28.346Z',NULL),(296,32,26,'dwadadawda','2024-01-10T17:26:16.504Z',NULL),(297,32,26,'wdadadadada','2024-01-10T17:26:19.118Z',NULL),(298,32,26,'@rrezja dwadadadad','2024-01-10T17:26:21.888Z','297'),(299,32,26,'@rrezja dwadadadawd','2024-01-10T17:26:35.564Z','297'),(300,32,26,'@rrezja dwadadada','2024-01-10T17:27:31.864Z','296'),(301,32,26,'@rrezja dwadawd','2024-01-10T17:29:32.908Z','296'),(302,32,26,'@rrezja dwadadwad','2024-01-10T17:30:46.127Z','296'),(303,32,26,'@rrezja dwadadwad','2024-01-10T17:32:50.049Z','297'),(304,32,26,'@rrezja dwadadwad','2024-01-10T17:33:33.591Z','297');
+INSERT INTO `comments` VALUES (261,26,47,'EDEN','2024-01-04T16:48:58.667Z',NULL),(262,26,47,'DOROZHANI','2024-01-04T16:49:03.945Z',NULL),(263,26,47,'@edorozhani 1','2024-01-04T16:49:09.373Z','262'),(264,26,47,'@edorozhani 2','2024-01-04T16:49:14.548Z','261'),(265,26,47,'@edorozhani dwadad','2024-01-05T11:03:45.400Z','262'),(266,26,47,'jkihwandawbdawbudahwdbawdbawbdwahdbahbdahbdhaibdaiudbaiaidbakdbajibdwaibdawinajibnawidbnwaidbnawda','2024-01-05T18:57:44.325Z',NULL),(269,26,47,'@edorozhani dwadadadadad','2024-01-09T13:10:21.866Z','262'),(270,26,47,'@edorozhani dwadada','2024-01-09T13:38:06.339Z','262'),(271,26,47,'@edorozhani dwadadawd','2024-01-09T14:03:27.348Z','261'),(272,26,47,'@edorozhani dwadwadwadwa','2024-01-09T14:03:33.740Z','261'),(273,26,47,'awdawdawdawd','2024-01-09T14:16:52.999Z',NULL),(274,26,47,'dwadadawd','2024-01-09T14:19:16.047Z',NULL),(275,26,45,'wdawdwadwad','2024-01-10T09:35:56.593Z',NULL),(277,26,45,'@edorozhani dwadadawd','2024-01-10T09:36:01.409Z','276'),(278,26,45,'@edorozhani dwadadawdawd','2024-01-10T09:36:04.269Z','276'),(290,26,45,'wdadawdawd','2024-01-10T10:17:28.346Z',NULL),(296,32,26,'dwadadawda','2024-01-10T17:26:16.504Z',NULL),(297,32,26,'wdadadadada','2024-01-10T17:26:19.118Z',NULL),(298,32,26,'@rrezja dwadadadad','2024-01-10T17:26:21.888Z','297'),(299,32,26,'@rrezja dwadadadawd','2024-01-10T17:26:35.564Z','297'),(300,32,26,'@rrezja dwadadada','2024-01-10T17:27:31.864Z','296'),(301,32,26,'@rrezja dwadawd','2024-01-10T17:29:32.908Z','296'),(302,32,26,'@rrezja dwadadwad','2024-01-10T17:30:46.127Z','296'),(303,32,26,'@rrezja dwadadwad','2024-01-10T17:32:50.049Z','297'),(304,32,26,'@rrezja dwadadwad','2024-01-10T17:33:33.591Z','297'),(306,36,26,'shum bkr','2024-01-15T16:28:24.908Z',NULL);
 /*!40000 ALTER TABLE `comments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -83,7 +83,7 @@ CREATE TABLE `followers` (
   `followingId` int NOT NULL,
   PRIMARY KEY (`followId`),
   UNIQUE KEY `followId_UNIQUE` (`followId`)
-) ENGINE=InnoDB AUTO_INCREMENT=78 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2016 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -92,7 +92,7 @@ CREATE TABLE `followers` (
 
 LOCK TABLES `followers` WRITE;
 /*!40000 ALTER TABLE `followers` DISABLE KEYS */;
-INSERT INTO `followers` VALUES (26,32,26),(35,26,31),(74,26,32),(75,26,27),(77,26,32);
+INSERT INTO `followers` VALUES (26,32,26),(35,26,31),(75,26,27),(76,26,33),(77,26,30),(78,26,29),(167,26,28),(187,26,34),(199,26,35),(201,36,26),(202,26,36),(203,26,37),(204,36,30),(205,36,32),(206,26,38),(207,38,27),(208,26,40),(209,26,41),(2015,26,39);
 /*!40000 ALTER TABLE `followers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -112,7 +112,7 @@ CREATE TABLE `posts` (
   `creatorId` int NOT NULL,
   PRIMARY KEY (`postId`),
   UNIQUE KEY `id_UNIQUE` (`postId`)
-) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -121,7 +121,7 @@ CREATE TABLE `posts` (
 
 LOCK TABLES `posts` WRITE;
 /*!40000 ALTER TABLE `posts` DISABLE KEYS */;
-INSERT INTO `posts` VALUES (25,'images/2023-12-14T18:00:26.071Z-Screenshot from 2023-12-14 11-17-29.png','dwadadad','2023-12-14T18:00:26.081Z','Dubai',31),(26,'images/2023-12-25T19:06:13.869Z-WhatsApp Image 2023-12-25 at 19.54.39.jpeg','sunset','2023-12-25T19:06:13.887Z','Tirana',32);
+INSERT INTO `posts` VALUES (25,'images/2023-12-14T18:00:26.071Z-Screenshot from 2023-12-14 11-17-29.png','dwadadad','2023-12-14T18:00:26.081Z','Dubai',31),(26,'images/2023-12-25T19:06:13.869Z-WhatsApp Image 2023-12-25 at 19.54.39.jpeg','sunset','2023-12-25T19:06:13.887Z','Tirana',32),(53,'images/2024-01-15T09:51:44.609Z-Screenshot from 2024-01-10 12-03-56.png',NULL,'2024-01-15T09:51:44.620Z','Albania',26),(54,'images/2024-01-15T10:39:37.907Z-Screenshot from 2024-01-10 12-03-56.png',NULL,'2024-01-15T10:39:37.913Z',NULL,26),(55,'images/2024-01-15T10:39:49.748Z-Screenshot from 2023-12-06 10-58-55.png',NULL,'2024-01-15T10:39:49.755Z',NULL,26),(57,'images/2024-01-16T13:12:13.575Z-Screenshot from 2023-11-28 15-37-14.png',NULL,'2024-01-16T13:12:13.578Z',NULL,26),(58,'images/2024-01-16T13:12:17.659Z-Screenshot from 2023-11-28 15-37-14.png',NULL,'2024-01-16T13:12:17.661Z',NULL,26),(59,'images/2024-01-16T13:12:20.996Z-Screenshot from 2024-01-10 12-03-56.png',NULL,'2024-01-16T13:12:20.999Z',NULL,26),(60,'images/2024-01-16T13:12:25.866Z-Screenshot from 2023-12-06 10-58-55.png',NULL,'2024-01-16T13:12:25.869Z',NULL,26),(62,'images/2024-01-16T13:12:37.043Z-Screenshot from 2023-12-06 10-58-55.png',NULL,'2024-01-16T13:12:37.046Z',NULL,26);
 /*!40000 ALTER TABLE `posts` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -138,7 +138,7 @@ CREATE TABLE `postsLikes` (
   `postId` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`likeId`),
   UNIQUE KEY `likesId_UNIQUE` (`likeId`)
-) ENGINE=InnoDB AUTO_INCREMENT=883 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=886 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -147,7 +147,7 @@ CREATE TABLE `postsLikes` (
 
 LOCK TABLES `postsLikes` WRITE;
 /*!40000 ALTER TABLE `postsLikes` DISABLE KEYS */;
-INSERT INTO `postsLikes` VALUES (37,'31','19'),(38,'31','18'),(52,'31','15'),(59,'31','12'),(61,'31','14'),(62,'31','13'),(72,'31','20'),(73,'31','21'),(853,'26','22'),(856,'26','2'),(857,'31','24'),(864,'26','25'),(865,'26','26'),(866,'26','31'),(867,'26','24'),(870,'26','46'),(871,'26','48'),(875,'26','45'),(876,'26','47'),(877,'26','20'),(880,'26','50'),(881,'31','26'),(882,'32','26');
+INSERT INTO `postsLikes` VALUES (37,'31','19'),(38,'31','18'),(52,'31','15'),(59,'31','12'),(61,'31','14'),(62,'31','13'),(72,'31','20'),(73,'31','21'),(853,'26','22'),(856,'26','2'),(857,'31','24'),(864,'26','25'),(865,'26','26'),(866,'26','31'),(867,'26','24'),(870,'26','46'),(871,'26','48'),(875,'26','45'),(876,'26','47'),(877,'26','20'),(880,'26','50'),(881,'31','26'),(882,'32','26'),(883,'26','53'),(884,'36','53'),(885,'36','26');
 /*!40000 ALTER TABLE `postsLikes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -170,7 +170,7 @@ CREATE TABLE `users` (
   `password` text NOT NULL,
   PRIMARY KEY (`userId`),
   UNIQUE KEY `userId_UNIQUE` (`userId`)
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -179,7 +179,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (26,'eden','dorozhani','edorozhani','','Åland Islands','images/2024-01-10T10:55:01.607Z-WhatsApp Image 2023-11-27 at 14.10.25.jpeg','eden@gmail.com','$2a$12$ZQ8p0Npg1XSPcl8nKxe0Zu7pNNt7QJkk2fGfaiUszNNRmWRXC.hKi'),(27,'ermonela','metushi','ela1',NULL,'Albania','images/Default_pfp.svg.png','ela1@gmail.com','$2a$12$oBOowugiQKyjL0psLWh/MuJ.0WYImdXUkFC2Pxmv5sqn/SlQBisx2'),(28,'aldo','xhafaj','xhafaj1',NULL,'Albania','images/Default_pfp.svg.png','xhafaj@gmail.com','$2a$12$ewP9J5WorRYlqUFlp144teaEAdJVfM4RrZ/Tr.SE/I2K/9wpteize'),(29,'zenel','rrushi','rrushizenel',NULL,'Albania','images/Default_pfp.svg.png','zenel@gmail.com','$2a$12$pxL6EY5TPlBbZclOWolLbe3H.DpWjU/xr74bLTEctVZRL.ox6Nt/K'),(30,'edison','biba','biba10',NULL,'Albania','images/Default_pfp.svg.png','biba10@gmail.com','$2a$12$kqojWqavuZ3jbZu1AKYIWe49czN582flCC9aIbUJ41dEblKbwNcWC'),(31,'ana','metushi','metushi15',NULL,'Albania','images/Default_pfp.svg.png','metushi15@gmail.com','$2a$12$aZVYv5UhFWNBh8KAug6dtO5yf5xxgQo7lNec2fv2jpc8YiGLicSqa'),(32,'rezarta','sadikaj','rrezja',NULL,'Albania','images/2023-12-25T18:57:02.282Z-WhatsApp Image 2023-12-25 at 19.54.39.jpeg','rrezja15@gmail.com','$2a$12$wB4wQdsESo6DNmo7zDBreOEcnKZJoDH06oNrYw3klbbyzt2Fy9wr.'),(33,'fermando','minaj','ferdi',NULL,'Albania','images/Default_pfp.svg.png','ferdi@gmail.com','$2a$12$rMSf4py/h2HOtR6d3rO.M.C488ZuA6YnuzH6oU.ifv/w9/msZ70VC');
+INSERT INTO `users` VALUES (26,'eden','dorozhani','edorozhani','','Albania','images/2024-01-16T15:05:44.793Z-combe-pullup.webp','eden@gmail.com','$2a$12$ZQ8p0Npg1XSPcl8nKxe0Zu7pNNt7QJkk2fGfaiUszNNRmWRXC.hKi'),(27,'ermonela','metushi','ela1',NULL,'Albania','images/Default_pfp.svg.png','ela1@gmail.com','$2a$12$oBOowugiQKyjL0psLWh/MuJ.0WYImdXUkFC2Pxmv5sqn/SlQBisx2'),(28,'aldo','xhafaj','xhafaj1',NULL,'Albania','images/Default_pfp.svg.png','xhafaj@gmail.com','$2a$12$ewP9J5WorRYlqUFlp144teaEAdJVfM4RrZ/Tr.SE/I2K/9wpteize'),(29,'zenel','rrushi','rrushizenel',NULL,'Albania','images/Default_pfp.svg.png','zenel@gmail.com','$2a$12$pxL6EY5TPlBbZclOWolLbe3H.DpWjU/xr74bLTEctVZRL.ox6Nt/K'),(30,'edison','biba','biba10',NULL,'Albania','images/Default_pfp.svg.png','biba10@gmail.com','$2a$12$kqojWqavuZ3jbZu1AKYIWe49czN582flCC9aIbUJ41dEblKbwNcWC'),(31,'ana','metushi','metushi15',NULL,'Albania','images/Default_pfp.svg.png','metushi15@gmail.com','$2a$12$aZVYv5UhFWNBh8KAug6dtO5yf5xxgQo7lNec2fv2jpc8YiGLicSqa'),(32,'rezarta','sadikaj','rrezja',NULL,'Albania','images/2023-12-25T18:57:02.282Z-WhatsApp Image 2023-12-25 at 19.54.39.jpeg','rrezja15@gmail.com','$2a$12$wB4wQdsESo6DNmo7zDBreOEcnKZJoDH06oNrYw3klbbyzt2Fy9wr.'),(33,'fermando','minaj','ferdi',NULL,'Albania','images/Default_pfp.svg.png','ferdi@gmail.com','$2a$12$rMSf4py/h2HOtR6d3rO.M.C488ZuA6YnuzH6oU.ifv/w9/msZ70VC'),(34,'beni','lalo','beni',NULL,'Albania','images/Default_pfp.svg.png','beni@gmail.com','$2a$12$Bv9HXnGRBwPpE98KUnrJnuKtZqhuTZM/qszLm5g/v1WPrycVWBmIu'),(35,'ani','marku','marku31',NULL,'Albania','images/Default_pfp.svg.png','marku@gmail.com','$2a$12$yD./DuEsiaPozqYX9y2kP.s8GUr6.CrW4rBqoTenSBv3ZpyvJF0Pu'),(36,'ilda','biba','ilda1',NULL,'Afghanistan','images/2024-01-15T15:34:46.865Z-Screenshot from 2024-01-10 12-03-56.png','ilda@gmail.com','$2a$12$Fhhe5YVGbtRDNRP.1m1R2e0f1P9MHvLYqSYNR0H/W63ldoW8iehn6'),(37,'Aleks','dervishi','aleks1',NULL,'Albania','images/Default_pfp.svg.png','aleks@gmail.com','$2a$12$xuA6Vb8BnV.sBGvT4kZv9u6mSg8QQ4CU8bhgjsiigYu5ZJa1LYFj6'),(38,'luend','golemi','juli1',NULL,'Albania','images/Default_pfp.svg.png','juli@gmail.com','$2a$12$HN7Rf9TswVRjs3pFDmel0eD7.d3KkVYGTE/guQkZxmOFjckBbnG4G'),(39,'roland','dorozhani','dorozhani',NULL,'Åland Islands','images/Default_pfp.svg.png','roland@gmail.com','$2a$12$513d9.50T8aR4DPcaA9CK.StVw1Djb7hAE1hSvxwKs9mECrakbFQi'),(40,'romeda','dorozhani','romi',NULL,'Åland Islands','images/Default_pfp.svg.png','romi@gmail.com','$2a$12$M5P8PgeZQ5Mxy3vsBn.JaeKQCOkperjGLnLkujLNXMS6XcpO9ywoq'),(41,'riko','ruki','riko',NULL,'Albania','images/Default_pfp.svg.png','riko@gmail.com','$2a$12$qGuBL0NArYVvoW0R0IeRs.vujJE.A88bUIrkJKe6DRo5lTd5zHk5m'),(42,'loli','muca','loli',NULL,'Albania','images/Default_pfp.svg.png','loli@gmail.com','$2a$12$3G.B9/lm/DeAkMjE0KID.e72h3d0X0Qx5ag5lLWIKkK/nTOap5bZ6'),(43,'rucb','rucb','rucb',NULL,'Albania','images/Default_pfp.svg.png','rucb@gmail.com','$2a$12$/xBE80/tGHsTvkT2xwrAt.LGK.XfT1PIql88SnFOsrO6wk6sD7yCW'),(44,'ruca','ruca','ruca',NULL,'Åland Islands','images/Default_pfp.svg.png','ruca@gmail.com','$2a$12$XLyraQnkKwH8euPOAz9kbuWqenIqLFAsVXnp.bKqhfEBoa2Tspv3m');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -192,4 +192,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-01-12 21:08:12
+-- Dump completed on 2024-01-16 18:38:02

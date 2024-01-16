@@ -15,9 +15,9 @@ exports.getPosts = async (req, res) => {
   const page = req.query.page;
   const pageSize = req.query.pageSize;
   const offset = +page * pageSize - pageSize;
-  const countResponse = await new Post().getCount();
-  const count = countResponse[0][0]["COUNT(*)"];
-  const response = await new Post().getPostsData(
+  const countResponse = await new Post().getFollowingPostsCount(userLoggedIn);
+  const count = countResponse[0][0].postsCount;
+  const response = await new Post().getFollowingPostsData(
     "createdAt",
     pageSize,
     offset,
@@ -63,7 +63,6 @@ exports.updatePost = async (req, res) => {
     url = imageUrl;
   }
   const image = file ? file : url;
-  console.log(image);
   const errors = validationResult(req);
   const obj = { ...req.body, postImage: image };
   try {

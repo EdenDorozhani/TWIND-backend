@@ -7,6 +7,7 @@ const authRoutes = require("./routes/auth");
 const homeRoutes = require("./routes/home");
 const postRoutes = require("./routes/post");
 const profileRouter = require("./routes/profile");
+const exploreRouter = require("./routes/explore");
 
 const app = express();
 
@@ -41,5 +42,6 @@ app.use("/", authRoutes);
 app.use("/", homeRoutes);
 app.use("/", postRoutes);
 app.use("/", profileRouter);
+app.use("/", exploreRouter);
 
 app.listen(3131);

@@ -24,26 +24,10 @@ module.exports = class Profile extends Model {
     (SELECT COUNT(*) FROM followers WHERE followers.followerId = ?) as followersCount,
     IFNULL(SUM(CASE WHEN followers.followerId = ? THEN 1 ELSE 0 END), 0) AS followedByUser
     FROM users 
-    LEFT JOIN followers ON users.userId = followers.followerId 
+    LEFT JOIN followers ON users.userId = followers.followingId 
     WHERE users.username = ?
     GROUP BY users.userId,followers.followId
     `;
     return db.execute(sql, [userId, userLoggedIn, username]);
-  }
-
-  getFollowers(id, userLoggedIn, orderBy, pageSize, offset, value) {
-    let sql = `
-    SELECT followers.*, users.userImgURL, users.username,
-    IFNULL(SUM(CASE WHEN followers.followerId = ${userLoggedIn} THEN 1 ELSE 0 END), 0) AS followedByUser
-    FROM followers
-    LEFT JOIN users ON users.userId = followers.followingId
-    WHERE followers.followerId = ${id} ${
-      value ? `AND users.username LIKE '${value}%'` : ""
-    }
-    GROUP BY followers.followId
-    ORDER BY ${orderBy} DESC
-    LIMIT ${pageSize} OFFSET ${offset};
-`;
-    return db.execute(sql);
   }
 };
