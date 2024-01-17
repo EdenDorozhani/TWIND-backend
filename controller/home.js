@@ -23,6 +23,7 @@ exports.getPosts = async (req, res) => {
     offset,
     userLoggedIn
   );
+  console.log(response);
   res.json(
     new Response(true, "posts are fetched successfully", {
       data: response[0],

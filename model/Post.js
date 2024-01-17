@@ -6,19 +6,19 @@ module.exports = class Post extends Model {
   primaryKey = "postId";
 
   getFollowingPostsData = (orderBy, pageSize, offset, userLoggedIn) => {
-    let sql = `SELECT posts.*, users.userImgURL, users.username, COUNT(DISTINCT postsLikes.likeId) AS likes,
-    (SELECT COUNT(*)
-        FROM comments
-        WHERE comments.postId = posts.postId) AS comments,
-    IFNULL(SUM(CASE WHEN postsLikes.userId = ${userLoggedIn} THEN 1 ELSE 0 END), 0) AS likedByUser
+    let sql = `SELECT
+    posts.*, users.userImgURL, users.username,
+    COUNT(DISTINCT postsLikes.likeId) AS likes,
+    (SELECT COUNT(*) FROM comments WHERE comments.postId = posts.postId) AS comments,
+    MAX(CASE WHEN postsLikes.userId = ${userLoggedIn} THEN "1" ELSE "0" END) AS likedByUser
     FROM posts
+    INNER JOIN followers ON posts.creatorId = followers.followingId
     LEFT JOIN users ON posts.creatorId = users.userId
     LEFT JOIN postsLikes ON posts.postId = postsLikes.postId
-    LEFT JOIN followers ON users.userId = followers.followerId 
-    WHERE followers.followerId = ${userLoggedIn}
+    WHERE  followers.followerId = ${userLoggedIn}
     GROUP BY posts.postId
-    ORDER BY ${orderBy} DESC 
-    LIMIT ${pageSize} OFFSET ${offset}`;
+    ORDER BY ${orderBy} DESC
+    LIMIT ${pageSize} OFFSET ${offset};`;
     return db.execute(sql);
   };
 
@@ -35,8 +35,8 @@ module.exports = class Post extends Model {
   getSinglePost = (postId, userLoggedIn) => {
     let sql = `
     SELECT posts.*, users.username, users.userImgURL, COUNT(DISTINCT postsLikes.likeId) AS likes,
-    MAX(CASE WHEN postsLikes.userId = ${userLoggedIn} THEN "1" ELSE 0 END) AS likedByUser,
-    MAX(CASE WHEN followers.followerId = ${userLoggedIn} THEN "1" ELSE 0 END) AS followedByUser
+    MAX(CASE WHEN postsLikes.userId = ${userLoggedIn} THEN "1" ELSE "0" END) AS likedByUser,
+    MAX(CASE WHEN followers.followerId = ${userLoggedIn} THEN "1" ELSE "0" END) AS followedByUser
     FROM posts
     LEFT JOIN users ON posts.creatorId = users.userId
     LEFT JOIN postsLikes ON posts.postId = postsLikes.postId

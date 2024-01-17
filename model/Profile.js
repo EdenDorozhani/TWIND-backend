@@ -24,9 +24,9 @@ module.exports = class Profile extends Model {
     (SELECT COUNT(*) FROM followers WHERE followers.followerId = ?) as followersCount,
     IFNULL(SUM(CASE WHEN followers.followerId = ? THEN 1 ELSE 0 END), 0) AS followedByUser
     FROM users 
-    LEFT JOIN followers ON users.userId = followers.followingId 
+    LEFT JOIN followers ON users.userId = followers.followerId 
     WHERE users.username = ?
-    GROUP BY users.userId,followers.followId
+    GROUP BY users.userId
     `;
     return db.execute(sql, [userId, userLoggedIn, username]);
   }

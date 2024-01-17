@@ -52,7 +52,7 @@ class Model {
 
   getUsers(id, userLoggedIn, orderBy, pageSize, offset, value) {
     let sql = `
-    SELECT DISTINCT followers.*, users.userImgURL, users.username,
+    SELECT followers.*, users.userImgURL, users.username,
     CASE WHEN EXISTS (
     SELECT 1
     FROM followers AS subFollowers

@@ -6,7 +6,6 @@ const User = require("../model/User");
 exports.getUsersPosts = async (req, res) => {
   const { pageSize, page } = req.query;
   const offset = page * pageSize - pageSize;
-  console.log(offset);
   try {
     const profilePostsResponse = await new Model().getPostsData(
       "",
@@ -40,10 +39,13 @@ exports.getAllUsers = async (req, res) => {
     offset,
     identifier
   );
+  const usersCount = await new User().getUsersCount(userLoggedIn, searchValue);
+  const count = usersCount[0][0]["COUNT(*)"];
   res.json(
     new Response(true, "users are fetched successfully", {
       data: response[0],
       module: "Followers",
+      count,
     })
   );
 };
