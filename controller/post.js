@@ -6,7 +6,7 @@ const CommentLikes = require("../model/CommentLikes");
 const helpers = require("./helpers");
 
 exports.updatePostLikes = async (req, res) => {
-  const userId = req.body.uupdatePostLikesserId;
+  const userId = req.body.userId;
   const postId = req.body.postId;
   helpers.updateLikes(req.body, postId, userId, new PostsLikes(), res);
 };
@@ -19,7 +19,11 @@ exports.updateCommentLikes = async (req, res) => {
 
 exports.postComment = async (req, res) => {
   const createdAt = new Date().toISOString();
+  const errors = validationResult(req);
   try {
+    if (!errors.isEmpty()) {
+      throw new Error("cannot post comment");
+    }
     const dataToInsert = new Comment().formatFormData({
       ...req.body,
       createdAt,
@@ -32,7 +36,7 @@ exports.postComment = async (req, res) => {
       new Response(true, "comment added successfully", responseData)
     );
   } catch (err) {
-    console.log(err);
+    res.status(500).send(new Response(false, err.message, errors.array()));
   }
 };
 

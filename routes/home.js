@@ -10,9 +10,15 @@ const router = express.Router();
 
 router.get("/getUserLoggedInData", isAuth, homeController.getUserData);
 
-router.get("/getPosts", isAuth, homeController.getPosts);
+router.get(
+  "/getFollowingPostsData",
+  isAuth,
+  homeController.getFollowingPostsData
+);
 
 router.get("/getSinglePost", isAuth, homeController.getSinglePost);
+
+router.get("/getNotifications", isAuth, homeController.getNotifications);
 
 router.post(
   "/create",

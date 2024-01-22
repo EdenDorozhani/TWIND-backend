@@ -13,7 +13,7 @@ module.exports = class Comment extends Post {
     IFNULL(SUM(CASE WHEN commentLikes.userId = ${
       data.userLoggedIn
     } THEN 1 ELSE 0 END), 0) AS likedByUser,
-    IFNULL(replyCount.replyCount,0) AS totalReplies
+    MAX(replyCount.replyCount) AS totalReplies
     FROM comments
     LEFT JOIN users ON comments.userId = users.userId
     LEFT JOIN commentLikes ON comments.commentId = commentLikes.commentId
@@ -23,7 +23,7 @@ module.exports = class Comment extends Post {
     WHERE postId = ${data.identifier} AND comments.reply IS NOT NULL
     GROUP BY comments.reply) AS replyCount ON comments.commentId = replyCount.reply
     WHERE comments.postId = ${data.identifier} AND comments.reply IS NULL
-    GROUP BY comments.commentId,replyCount.replyCount
+    GROUP BY comments.commentId
     ORDER BY comments.commentId DESC
     LIMIT ${+data.pageSize} OFFSET ${data.offset};
 `;

@@ -1,6 +1,5 @@
 const { body } = require("express-validator");
 const User = require("../../model/User");
-const Response = require("../../model/Response");
 const bcrypt = require("bcryptjs");
 
 exports.signupValidationSchema = [
@@ -98,6 +97,25 @@ exports.changePasswordValidationSchema = [
     .matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/),
 ];
 
+exports.newPasswordValidationSchema = [
+  body("email")
+    .trim()
+    .notEmpty()
+    .isEmail()
+    .custom(async (value) => {
+      const response = await new User().getOne("users.email", value);
+      const user = response[0][0];
+      console.log(response);
+      if (!user) {
+        throw new Error("incorrect email");
+      }
+    }),
+  body("newPassword")
+    .trim()
+    .notEmpty()
+    .matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/),
+];
+
 exports.changeEmailValidationSchema = [
   body("currentEmail")
     .trim()
@@ -121,4 +139,11 @@ exports.changeEmailValidationSchema = [
         throw new Error("E-mail already in use");
       }
     }),
+];
+
+exports.commentValidationSchema = [
+  body("description")
+    .notEmpty()
+    .isLength({ max: 2200 })
+    .withMessage("Comment must be below 200 characters."),
 ];

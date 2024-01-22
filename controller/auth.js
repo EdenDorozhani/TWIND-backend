@@ -57,3 +57,21 @@ exports.login = async (req, res) => {
     res.status(500).send(response);
   }
 };
+
+exports.forgotPassword = async (req, res) => {
+  const { newPassword, email } = req.body;
+  const errors = validationResult(req);
+  try {
+    if (!errors.isEmpty()) {
+      throw new Error("cannot change password");
+    }
+    const response = await new User().getOne("users.email", email);
+    const userId = response[0][0].userId;
+    const password = await bcrypt.hash(newPassword, 12);
+    await new User().updateData({ password }, userId);
+    res.json(new Response(true, "password changed successfully"));
+  } catch (err) {
+    let response = new Response(false, err.message, errors.array());
+    res.status(500).send(response);
+  }
+};

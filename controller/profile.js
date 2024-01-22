@@ -1,5 +1,4 @@
 const Post = require("../model/Post");
-const Profile = require("../model/Profile");
 const Response = require("../model/Response");
 const User = require("../model/User");
 const { validationResult } = require("express-validator");
@@ -29,7 +28,7 @@ exports.getProfileUserData = async (req, res) => {
   try {
     const response = await new User().getOne("username", username);
     const userId = response[0][0].userId;
-    const profileUserDataResponse = await new Profile().getUserData(
+    const profileUserDataResponse = await new User().getUserData(
       username,
       userId,
       userLoggedIn
@@ -68,8 +67,7 @@ exports.editProfile = async (req, res) => {
 };
 
 exports.changePassword = async (req, res) => {
-  const userId = req.body.userId;
-  const { newPassword } = req.body;
+  const { newPassword, userId } = req.body;
   const errors = validationResult(req);
   try {
     if (!errors.isEmpty()) {
@@ -130,7 +128,7 @@ exports.getFollowers = async (req, res) => {
   helpers.getData({
     data: { ...req.query, userLoggedIn },
     res,
-    dataMethod: new Model().getUsers,
+    dataMethod: new Follower().getUserFollowers,
     module: "Followers",
   });
 };

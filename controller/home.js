@@ -11,7 +11,7 @@ exports.getUserData = async (req, res) => {
   res.json(new Response(true, "user data is fetched", userData));
 };
 
-exports.getPosts = async (req, res) => {
+exports.getFollowingPostsData = async (req, res) => {
   const userLoggedIn = req.userLoggedIn;
   helpers.getData({
     data: { ...req.query, userLoggedIn },
@@ -104,4 +104,14 @@ exports.getSinglePost = async (req, res) => {
   } catch (err) {
     res.status(500).json(new Response(false, err.message));
   }
+};
+
+exports.getNotifications = async (req, res) => {
+  const userLoggedIn = req.userLoggedIn;
+  const response1 = await new User().getPostLikesNotifications(userLoggedIn);
+  const response2 = await new User().getCommentsNotifications(userLoggedIn);
+  const response3 = await new User().getCommentsLikesNotifications(
+    userLoggedIn
+  );
+  console.log(response3);
 };
