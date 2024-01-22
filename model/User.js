@@ -15,32 +15,30 @@ module.exports = class User extends Model {
     "password",
   ];
 
-  findUserByUsername(username) {
-    return this.getOne("username", username);
-  }
-
-  findUserByEmail(email) {
-    return this.getOne("email", email);
-  }
-
-  getUsersCount(userLoggedIn, value) {
+  getUsersCount(data) {
     let sql = `SELECT COUNT(*)
     FROM users
-     WHERE users.username LIKE '${value}%'
-      AND NOT users.userId = ${userLoggedIn}
+     WHERE users.username LIKE '${data.value}%'
+      AND NOT users.userId = ${data.userLoggedIn}
       `;
     return db.execute(sql);
   }
 
-  getAllUsers(value, userLoggedIn, pageSize, offset) {
+  getAllUsers(data) {
     let sql = `
         SELECT users.*,
-        IFNULL(SUM(CASE WHEN followers.followerId = ${userLoggedIn} THEN 1 ELSE 0 END), 0) AS followedByUser
+        IFNULL(SUM(CASE WHEN followers.followerId = ${
+          data.userLoggedIn
+        } THEN 1 ELSE 0 END), 0) AS followedByUser
         FROM users 
-        LEFT JOIN followers ON users.userId = followers.followingId AND followers.followerId = ${userLoggedIn}
-        WHERE users.username LIKE '${value}%' AND NOT users.userId = ${userLoggedIn} 
+        LEFT JOIN followers ON users.userId = followers.followingId AND followers.followerId = ${
+          data.userLoggedIn
+        }
+        WHERE users.username LIKE '${data.value}%' AND NOT users.userId = ${
+      data.userLoggedIn
+    } 
         GROUP BY users.userId
-        LIMIT ${pageSize} OFFSET ${offset};
+        LIMIT ${+data.pageSize} OFFSET ${data.offset};
     `;
     return db.execute(sql);
   }

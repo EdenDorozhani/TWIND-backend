@@ -6,43 +6,28 @@ const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const Follower = require("../model/Follower");
 const Model = require("../model/Model");
+const helpers = require("./helpers");
 
 exports.getProfilePostsData = async (req, res) => {
-  const { identifier, pageSize, page } = req.query;
-  const offset = page * pageSize - pageSize;
-  try {
-    const profilePostsResponse = await new Model().getPostsData(
-      identifier,
-      pageSize,
-      offset
-    );
-    const profilePosts = profilePostsResponse[0];
-    const profileUserDataResponse = await new User().findUserByUsername(
-      identifier
-    );
-    const profileUserData = profileUserDataResponse[0][0];
-    const postsCount = await new Post().getCount(
-      profileUserData.userId,
-      "posts.creatorId"
-    );
-    const count = postsCount[0][0]["COUNT(*)"];
-    console.log(count);
-    res.json(
-      new Response(true, "data fetched successfully", {
-        data: profilePosts,
-        count,
-      })
-    );
-  } catch (err) {
-    console.log(err);
-  }
+  const profileUserDataResponse = await new User().getOne(
+    "username",
+    req.query.identifier
+  );
+  const countIdentifier = profileUserDataResponse[0][0].userId;
+  helpers.getData({
+    data: { ...req.query, countIdentifier, field: "posts.creatorId" },
+    res,
+    countMethod: new Post().getCount,
+    dataMethod: new Model().getPostsData,
+    module: "ProfilePosts",
+  });
 };
 
 exports.getProfileUserData = async (req, res) => {
   const userLoggedIn = req.userLoggedIn;
   const { username } = req.query;
   try {
-    const response = await new User().findUserByUsername(username);
+    const response = await new User().getOne("username", username);
     const userId = response[0][0].userId;
     const profileUserDataResponse = await new Profile().getUserData(
       username,
@@ -142,23 +127,10 @@ exports.postFollower = async (req, res) => {
 
 exports.getFollowers = async (req, res) => {
   const userLoggedIn = req.userLoggedIn;
-  const page = req.query.page;
-  const pageSize = +req.query.pageSize;
-  const offset = +page * pageSize - pageSize;
-  const profileId = req.query.identifier;
-  const searchValue = req.query.value;
-  const response = await new Model().getUsers(
-    profileId,
-    userLoggedIn,
-    "followId",
-    pageSize,
-    offset,
-    searchValue
-  );
-  res.json(
-    new Response(true, "followers are fetched successfully", {
-      data: response[0],
-      module: "Followers",
-    })
-  );
+  helpers.getData({
+    data: { ...req.query, userLoggedIn },
+    res,
+    dataMethod: new Model().getUsers,
+    module: "Followers",
+  });
 };

@@ -11,7 +11,7 @@ exports.signupValidationSchema = [
     .notEmpty()
     .matches(/^[a-zA-Z0-9](?!.*[_.]{2})[a-zA-Z0-9._]{0,28}[a-zA-Z0-9]$/)
     .custom(async (value) => {
-      const user = await new User().findUserByUsername(value);
+      const user = await new User().getOne("username", value);
       if (user[0][0]) {
         throw new Error("username already in use");
       }
@@ -21,7 +21,7 @@ exports.signupValidationSchema = [
     .notEmpty()
     .isEmail()
     .custom(async (value) => {
-      const user = await new User().findUserByEmail(value);
+      const user = await new User().getOne("email", value);
       if (user[0][0]) {
         throw new Error("E-mail already in use");
       }
@@ -48,7 +48,6 @@ exports.loginValidationSchema = [
 exports.managePostValidationSchema = [
   body("postImage")
     .custom((value, { req }) => {
-      console.log();
       const imageUrl = req.body.postImage;
       if (typeof imageUrl === "string") {
         return true;
@@ -69,7 +68,7 @@ exports.editProfileValidationSchema = [
     .notEmpty()
     .matches(/^[a-zA-Z0-9](?!.*[_.]{2})[a-zA-Z0-9._]{0,28}[a-zA-Z0-9]$/)
     .custom(async (value, { req }) => {
-      const response = await new User().findUserByUsername(value);
+      const response = await new User().getOne("username", value);
       const user = response[0][0];
       if (user && user.userId !== req.userLoggedIn) {
         throw new Error("username already in use");
@@ -105,9 +104,8 @@ exports.changeEmailValidationSchema = [
     .notEmpty()
     .isEmail()
     .custom(async (value, { req }) => {
-      console.log(value);
       const userId = req.userLoggedIn;
-      const response = await new User().findUserByEmail(value);
+      const response = await new User().getOne("email", value);
       const user = response[0][0];
       if (!user && user?.userId !== userId) {
         throw new Error("incorrect email");
@@ -118,8 +116,7 @@ exports.changeEmailValidationSchema = [
     .notEmpty()
     .isEmail()
     .custom(async (value) => {
-      const user = await new User().findUserByEmail(value);
-      console.log(user[0][0]);
+      const user = await new User().getOne("email", value);
       if (user[0][0]) {
         throw new Error("E-mail already in use");
       }

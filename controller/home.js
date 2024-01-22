@@ -2,6 +2,7 @@ const { validationResult } = require("express-validator");
 const Post = require("../model/Post");
 const Response = require("../model/Response");
 const User = require("../model/User");
+const helpers = require("./helpers");
 
 exports.getUserData = async (req, res) => {
   const userLoggedIn = req.userLoggedIn;
@@ -12,24 +13,13 @@ exports.getUserData = async (req, res) => {
 
 exports.getPosts = async (req, res) => {
   const userLoggedIn = req.userLoggedIn;
-  const page = req.query.page;
-  const pageSize = req.query.pageSize;
-  const offset = +page * pageSize - pageSize;
-  const countResponse = await new Post().getFollowingPostsCount(userLoggedIn);
-  const count = countResponse[0][0].postsCount;
-  const response = await new Post().getFollowingPostsData(
-    "createdAt",
-    pageSize,
-    offset,
-    userLoggedIn
-  );
-  console.log(response);
-  res.json(
-    new Response(true, "posts are fetched successfully", {
-      data: response[0],
-      count,
-    })
-  );
+  helpers.getData({
+    data: { ...req.query, userLoggedIn },
+    res,
+    countMethod: new Post().getFollowingPostsCount,
+    dataMethod: new Post().getFollowingPostsData,
+    module: "Posts",
+  });
 };
 
 exports.createPost = async (req, res) => {
@@ -86,7 +76,6 @@ exports.updatePost = async (req, res) => {
 
 exports.deletePost = async (req, res) => {
   const { identifier } = req.query;
-  console.log(identifier);
   try {
     await new Post().deleteData(identifier);
     res.json(

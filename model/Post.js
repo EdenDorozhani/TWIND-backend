@@ -5,29 +5,31 @@ module.exports = class Post extends Model {
   tableName = "posts";
   primaryKey = "postId";
 
-  getFollowingPostsData = (orderBy, pageSize, offset, userLoggedIn) => {
+  getFollowingPostsData = (data) => {
     let sql = `SELECT
     posts.*, users.userImgURL, users.username,
     COUNT(DISTINCT postsLikes.likeId) AS likes,
     (SELECT COUNT(*) FROM comments WHERE comments.postId = posts.postId) AS comments,
-    MAX(CASE WHEN postsLikes.userId = ${userLoggedIn} THEN "1" ELSE "0" END) AS likedByUser
+    MAX(CASE WHEN postsLikes.userId = ${
+      data.userLoggedIn
+    } THEN "1" ELSE "0" END) AS likedByUser
     FROM posts
-    INNER JOIN followers ON posts.creatorId = followers.followingId
+    INNER JOIN followers ON posts.creatorId = followers.followingId 
     LEFT JOIN users ON posts.creatorId = users.userId
     LEFT JOIN postsLikes ON posts.postId = postsLikes.postId
-    WHERE  followers.followerId = ${userLoggedIn}
+    WHERE followers.followerId = ${data.userLoggedIn}
     GROUP BY posts.postId
-    ORDER BY ${orderBy} DESC
-    LIMIT ${pageSize} OFFSET ${offset};`;
+    ORDER BY createdAt DESC
+    LIMIT ${+data.pageSize} OFFSET ${data.offset};`;
     return db.execute(sql);
   };
 
-  getFollowingPostsCount = (userLoggedIn) => {
-    let sql = `SELECT COUNT(DISTINCT posts.postId) AS postsCount
+  getFollowingPostsCount = (data) => {
+    let sql = `SELECT COUNT(*)
       FROM posts 
       INNER JOIN users ON posts.creatorId = users.userId
-      INNER JOIN followers ON users.userId = followers.followerId
-      WHERE followers.followerId = ${userLoggedIn}
+      INNER JOIN followers ON posts.creatorId = followers.followingId
+      WHERE followers.followerId = ${data.userLoggedIn}
       `;
     return db.execute(sql);
   };

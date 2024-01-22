@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../model/User");
 const Response = require("../model/Response");
 
-exports.signup = async (req, res, next) => {
+exports.signup = async (req, res) => {
   const userImgURL = "images/Default_pfp.svg.png";
   const formData = req.body;
   const errors = validationResult(req);
@@ -33,23 +33,21 @@ exports.signup = async (req, res, next) => {
   }
 };
 
-exports.login = async (req, res, next) => {
+exports.login = async (req, res) => {
   const { username, password } = req.body;
-  const userobj = new User();
   try {
-    const resolve = await userobj.findUserByUsername(username);
+    const resolve = await new User().getOne("username", username);
     if (resolve[0].length === 0) {
       throw new Error("Authentication failure: Invalid username or password");
     }
-    const user = resolve[0][0];
-
+    const userData = resolve[0][0];
     const token = jwt.sign(
-      { username: username, userId: user.userId },
+      { username, userId: userData.userId },
       "somesupersecretsecret",
       { expiresIn: "1h" }
     );
-    const doMatch = await bcrypt.compare(password, user.password);
-    const responseData = { token: token, userData: user };
+    const doMatch = await bcrypt.compare(password, userData.password);
+    const responseData = { token, userData };
     if (!doMatch) {
       throw new Error("Authentication failure: Invalid username or password");
     }
