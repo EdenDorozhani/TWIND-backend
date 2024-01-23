@@ -4,7 +4,7 @@ const Comment = require("./Post");
 module.exports = class CommentLikes extends Comment {
   tableName = "commentLikes";
   primaryKey = "likeId";
-  dbColumns = ["userId", "commentId"];
+  dbColumns = ["userId", "commentId", "createdAt"];
   foreignKey = "commentId";
 
   getCommentsLikes(data) {

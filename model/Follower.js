@@ -3,7 +3,7 @@ const Model = require("./Model");
 module.exports = class Follower extends Model {
   tableName = "followers";
   primaryKey = "followId";
-  dbColumns = ["followerId", "followingId"];
+  dbColumns = ["followerId", "followingId", "createdAt"];
   foreignKey = "followingId";
 
   getUserFollowers = (data) => {

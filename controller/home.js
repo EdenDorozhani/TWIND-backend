@@ -108,10 +108,69 @@ exports.getSinglePost = async (req, res) => {
 
 exports.getNotifications = async (req, res) => {
   const userLoggedIn = req.userLoggedIn;
-  const response1 = await new User().getPostLikesNotifications(userLoggedIn);
-  const response2 = await new User().getCommentsNotifications(userLoggedIn);
-  const response3 = await new User().getCommentsLikesNotifications(
-    userLoggedIn
-  );
-  console.log(response3);
+  const { page, pageSize } = req.query;
+  const offset = page * pageSize - pageSize;
+  try {
+    const postLikes = await new User().getPostLikesNotifications(
+      userLoggedIn,
+      pageSize,
+      offset
+    );
+    const postLikesCount = await new User().getPostsLikesNotificationsCount(
+      userLoggedIn
+    );
+
+    const comments = await new User().getCommentsNotifications(
+      userLoggedIn,
+      pageSize,
+      offset
+    );
+    const commentsCount = await new User().getCommentsNotificationsCount(
+      userLoggedIn
+    );
+
+    const commentLikes = await new User().getCommentsLikesNotifications(
+      userLoggedIn,
+      pageSize,
+      offset
+    );
+    const commentLikesCount =
+      await new User().getCommentLikesNotificationsCount(userLoggedIn);
+
+    const followers = await new User().getFollowingNotifications(
+      userLoggedIn,
+      pageSize,
+      offset
+    );
+
+    const notificationsCount =
+      postLikesCount[0][0].postsLikesCount +
+      commentsCount[0][0].commentsCount +
+      commentLikesCount[0][0].commentLikesCount +
+      1;
+
+    const notificationsData = postLikes[0].concat(
+      comments[0],
+      commentLikes[0],
+      followers[0]
+    );
+
+    const sortedData = notificationsData.sort((a, b) => {
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      return dateB - dateA;
+    });
+
+    const responseData = {
+      data: sortedData,
+      module: "Notifications",
+      count: notificationsCount,
+    };
+
+    res.json(
+      new Response(true, "notifications are fetched successfully", responseData)
+    );
+  } catch (err) {
+    console.log(err);
+  }
 };

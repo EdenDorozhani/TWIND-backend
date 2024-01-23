@@ -4,7 +4,7 @@ const Post = require("./Post");
 module.exports = class PostsLikes extends Post {
   tableName = "postsLikes";
   primaryKey = "likeId";
-  dbColumns = ["userId", "postId"];
+  dbColumns = ["userId", "postId", "createdAt"];
   foreignKey = "postId";
 
   getLikes(data) {

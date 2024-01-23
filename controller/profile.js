@@ -98,10 +98,14 @@ exports.changeEmail = async (req, res) => {
 };
 
 exports.postFollower = async (req, res) => {
+  const createdAt = new Date().toISOString();
   const { followerId, followingId, keyWord } = req.body;
   if (keyWord === "follow") {
     try {
-      const dataToInsert = new Follower().formatFormData(req.body);
+      const dataToInsert = new Follower().formatFormData({
+        ...req.body,
+        createdAt,
+      });
       await new Follower().addData(dataToInsert);
       res.json(new Response(true));
     } catch (err) {

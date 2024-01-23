@@ -26,9 +26,10 @@ exports.getData = async ({
 };
 
 exports.updateLikes = async (body, id, userId, obj, res) => {
+  const createdAt = new Date().toISOString();
   if (body.keyWord === "like") {
     try {
-      const dataToInsert = obj.formatFormData(body);
+      const dataToInsert = obj.formatFormData({ ...body, createdAt });
       await obj.addData(dataToInsert);
       res.json(new Response(true));
     } catch (err) {
