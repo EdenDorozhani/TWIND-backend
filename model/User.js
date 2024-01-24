@@ -34,9 +34,7 @@ module.exports = class User extends Model {
         LEFT JOIN followers ON users.userId = followers.followingId AND followers.followerId = ${
           data.userLoggedIn
         }
-        WHERE users.username LIKE '${data.value}%' AND NOT users.userId = ${
-      data.userLoggedIn
-    } 
+        WHERE users.username LIKE '${data.value}%' 
         GROUP BY users.userId,followers.followId
         LIMIT ${+data.pageSize} OFFSET ${data.offset};
     `;
@@ -202,7 +200,7 @@ module.exports = class User extends Model {
     return db.execute(sql, [userId, userId]);
   }
 
-  getFollowingNotifications(userId) {
+  getFollowingNotifications(userId, offset) {
     let sql = `
     SELECT 'followers' AS type, users.username,followers.createdAt,  users.userImgURL, (SELECT COUNT(*) - 1 FROM followers WHERE followers.followingId = 
     ${userId}) AS others
@@ -211,7 +209,7 @@ module.exports = class User extends Model {
     WHERE followers.followingId = ? 
     GROUP BY followers.followId
     ORDER BY followers.followId DESC
-    LIMIT ${1}
+    LIMIT ${1} OFFSET ${offset};
 `;
     return db.execute(sql, [userId]);
   }

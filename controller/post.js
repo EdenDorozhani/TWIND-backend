@@ -52,20 +52,7 @@ exports.getComments = async (req, res) => {
 };
 
 exports.deleteComment = async (req, res) => {
-  const { identifier } = req.query;
-  try {
-    await new Comment().deleteData(identifier);
-    res.json(
-      new Response(
-        true,
-        `comment with id:${identifier} has been deleted successfully`,
-        identifier
-      )
-    );
-  } catch (err) {
-    let response = new Response(false, err.message);
-    res.status(500).send(response);
-  }
+  helpers.deleteData({ model: new Comment(), type: "comment", req, res });
 };
 
 exports.getReplies = async (req, res) => {

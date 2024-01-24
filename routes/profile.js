@@ -41,4 +41,5 @@ router.post(
 
 router.post("/postFollower", isAuth, profileController.postFollower);
 
+router.delete("/deleteAccount", isAuth, profileController.deleteAccount);
 module.exports = router;

@@ -8,16 +8,18 @@ module.exports = class Post extends Model {
   getFollowingPostsData = (data) => {
     let sql = `SELECT
     posts.*, users.userImgURL, users.username,
-    COUNT(DISTINCT postsLikes.likeId) AS likes,
-    (SELECT COUNT(*) FROM comments WHERE comments.postId = posts.postId) AS comments,
+    COUNT(DISTINCT postsLikes.likeId) AS likesCount,
+    (SELECT COUNT(*) FROM comments WHERE comments.postId = posts.postId) AS commentsCount,
     MAX(CASE WHEN postsLikes.userId = ${
       data.userLoggedIn
     } THEN "1" ELSE "0" END) AS likedByUser
     FROM posts
-    INNER JOIN followers ON posts.creatorId = followers.followingId 
+    INNER JOIN followers ON posts.creatorId = followers.followingId
     LEFT JOIN users ON posts.creatorId = users.userId
     LEFT JOIN postsLikes ON posts.postId = postsLikes.postId
-    WHERE followers.followerId = ${data.userLoggedIn}
+    WHERE followers.followerId = ${data.userLoggedIn} OR posts.creatorId = ${
+      data.userLoggedIn
+    }
     GROUP BY posts.postId
     ORDER BY createdAt DESC
     LIMIT ${+data.pageSize} OFFSET ${data.offset};`;
@@ -27,11 +29,10 @@ module.exports = class Post extends Model {
   getFollowingPostsCount = (data) => {
     let sql = `SELECT COUNT(*)
       FROM posts 
-      INNER JOIN users ON posts.creatorId = users.userId
-      INNER JOIN followers ON posts.creatorId = followers.followingId
-      WHERE followers.followerId = ${data.userLoggedIn}
+      INNER JOIN followers ON posts.creatorId = followers.followingId 
+      WHERE followers.followerId = ? OR posts.creatorId = ?
       `;
-    return db.execute(sql);
+    return db.execute(sql, [data.userLoggedIn, data.userLoggedIn]);
   };
 
   getSinglePost = (postId, userLoggedIn) => {

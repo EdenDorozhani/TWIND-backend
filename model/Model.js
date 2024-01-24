@@ -35,10 +35,10 @@ class Model {
 
   getPostsData = (data) => {
     let sql = `SELECT posts.*, 
-        COUNT(postsLikes.likeId) as likeCount,
+        COUNT(postsLikes.likeId) as likesCount,
         (SELECT COUNT(*)
         FROM comments
-        WHERE comments.postId = posts.postId) AS comments
+        WHERE comments.postId = posts.postId) AS commentsCount
         FROM posts 
         LEFT JOIN users ON posts.creatorId = users.userId
         LEFT JOIN postsLikes ON posts.postId = postsLikes.postId

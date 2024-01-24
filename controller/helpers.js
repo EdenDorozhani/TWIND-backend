@@ -12,6 +12,7 @@ exports.getData = async ({
     const dataResponse = await dataMethod({ ...data, offset });
     const dataCount = await countMethod(data);
     const count = dataCount?.[0][0]["COUNT(*)"];
+
     res.json(
       new Response(true, "data is fetched successfully", {
         data: dataResponse[0],
@@ -44,5 +45,22 @@ exports.updateLikes = async (body, id, userId, obj, res) => {
     } catch (err) {
       console.log(err);
     }
+  }
+};
+
+exports.deleteData = async ({ model, type, req, res }) => {
+  const { identifier } = req.query;
+  try {
+    await model.deleteData(identifier);
+    res.json(
+      new Response(
+        true,
+        `${type} with id:${identifier} has been deleted successfully`,
+        identifier
+      )
+    );
+  } catch (err) {
+    let response = new Response(false, err.message);
+    res.status(500).send(response);
   }
 };

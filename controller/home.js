@@ -13,6 +13,10 @@ exports.getUserData = async (req, res) => {
 
 exports.getFollowingPostsData = async (req, res) => {
   const userLoggedIn = req.userLoggedIn;
+
+  console.log(
+    await new Post().getFollowingPostsCount({ ...req.query, userLoggedIn })
+  );
   helpers.getData({
     data: { ...req.query, userLoggedIn },
     res,
@@ -75,20 +79,7 @@ exports.updatePost = async (req, res) => {
 };
 
 exports.deletePost = async (req, res) => {
-  const { identifier } = req.query;
-  try {
-    await new Post().deleteData(identifier);
-    res.json(
-      new Response(
-        true,
-        `post with id:${identifier} has been deleted successfully`,
-        identifier
-      )
-    );
-  } catch (err) {
-    let response = new Response(false, err.message);
-    res.status(500).send(response);
-  }
+  helpers.deleteData({ model: new Post(), type: "post", req, res });
 };
 
 exports.getSinglePost = async (req, res) => {
@@ -139,15 +130,17 @@ exports.getNotifications = async (req, res) => {
 
     const followers = await new User().getFollowingNotifications(
       userLoggedIn,
-      pageSize,
       offset
     );
 
     const notificationsCount =
       postLikesCount[0][0].postsLikesCount +
       commentsCount[0][0].commentsCount +
-      commentLikesCount[0][0].commentLikesCount +
-      1;
+      commentLikesCount[0][0].commentLikesCount;
+
+    const modifiedCount = notificationsCount
+      ? notificationsCount + 1
+      : notificationsCount;
 
     const notificationsData = postLikes[0].concat(
       comments[0],
@@ -155,16 +148,10 @@ exports.getNotifications = async (req, res) => {
       followers[0]
     );
 
-    const sortedData = notificationsData.sort((a, b) => {
-      const dateA = new Date(a.createdAt);
-      const dateB = new Date(b.createdAt);
-      return dateB - dateA;
-    });
-
     const responseData = {
-      data: sortedData,
+      data: notificationsData,
       module: "Notifications",
-      count: notificationsCount,
+      count: modifiedCount,
     };
 
     res.json(

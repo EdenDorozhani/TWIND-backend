@@ -97,9 +97,13 @@ exports.changeEmail = async (req, res) => {
   }
 };
 
+exports.deleteAccount = async (req, res) => {
+  helpers.deleteData({ model: new User(), type: "account", req, res });
+};
+
 exports.postFollower = async (req, res) => {
   const createdAt = new Date().toISOString();
-  const { followerId, followingId, keyWord } = req.body;
+  const { followerId, userId, keyWord } = req.body;
   if (keyWord === "follow") {
     try {
       const dataToInsert = new Follower().formatFormData({
@@ -115,7 +119,7 @@ exports.postFollower = async (req, res) => {
     try {
       const record = await new Follower().getRecord(
         followerId,
-        followingId,
+        userId,
         "followerId"
       );
       const recordId = record[0][0].followId;
@@ -129,10 +133,12 @@ exports.postFollower = async (req, res) => {
 
 exports.getFollowers = async (req, res) => {
   const userLoggedIn = req.userLoggedIn;
+
   helpers.getData({
     data: { ...req.query, userLoggedIn },
     res,
     dataMethod: new Follower().getUserFollowers,
+    countMethod: new Follower().getUserFollowersCount,
     module: "Followers",
   });
 };
