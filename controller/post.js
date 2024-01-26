@@ -41,9 +41,8 @@ exports.postComment = async (req, res) => {
 };
 
 exports.getComments = async (req, res) => {
-  const userLoggedIn = req.userLoggedIn;
   helpers.getData({
-    data: { ...req.query, userLoggedIn },
+    data: req.query,
     countMethod: new Comment().getCommentsCount,
     dataMethod: new Comment().getAllComments,
     module: "Comments",

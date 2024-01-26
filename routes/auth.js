@@ -5,7 +5,7 @@ const authController = require("../controller/auth");
 const {
   signupValidationSchema,
   loginValidationSchema,
-  newPasswordValidationSchema,
+  configureEmailValidationSchema,
 } = require("./validation");
 
 const router = express.Router();
@@ -15,9 +15,11 @@ router.post("/signup", signupValidationSchema, authController.signup);
 router.post("/login", loginValidationSchema, authController.login);
 
 router.post(
-  "/forgotPassword",
-  newPasswordValidationSchema,
-  authController.forgotPassword
+  "/configureEmail",
+  configureEmailValidationSchema,
+  authController.configureEmail
 );
+
+router.post("/changePassword", authController.changePassword);
 
 module.exports = router;

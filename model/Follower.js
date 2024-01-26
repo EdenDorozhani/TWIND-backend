@@ -7,6 +7,7 @@ module.exports = class Follower extends Model {
   foreignKey = "followingId";
 
   getUserFollowers = (data) => {
+    console.log(data);
     let sql = `
     SELECT followers.*, users.userImgURL, users.username,
     CASE WHEN EXISTS (
@@ -17,7 +18,7 @@ module.exports = class Follower extends Model {
   ) THEN 1 ELSE 0 END AS followedByUser
     FROM followers
     INNER JOIN users ON users.userId = followers.followingId
-    WHERE followers.followerId = ${data.identifier}
+    WHERE followers.followerId = ${data.userLoggedIn}
     ${data.value ? `AND users.username LIKE '${data.value}%'` : ""}
     ORDER BY followers.followId DESC
     LIMIT ${+data.pageSize} OFFSET ${data.offset};
@@ -29,7 +30,7 @@ module.exports = class Follower extends Model {
     let sql = `SELECT COUNT(*) 
     FROM followers
     INNER JOIN users  ON users.userId = followers.followingId
-  WHERE followers.followerId = ${data.identifier}
+  WHERE followers.followerId = ${data.userLoggedIn}
   ${data.value ? `AND users.username LIKE '${data.value}%'` : ""}
     `;
     return this.db.execute(sql);

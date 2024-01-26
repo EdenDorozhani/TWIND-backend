@@ -2,6 +2,8 @@ const { validationResult } = require("express-validator");
 const Post = require("../model/Post");
 const Response = require("../model/Response");
 const User = require("../model/User");
+const fs = require("fs");
+
 const helpers = require("./helpers");
 
 exports.getUserData = async (req, res) => {
@@ -12,13 +14,8 @@ exports.getUserData = async (req, res) => {
 };
 
 exports.getFollowingPostsData = async (req, res) => {
-  const userLoggedIn = req.userLoggedIn;
-
-  console.log(
-    await new Post().getFollowingPostsCount({ ...req.query, userLoggedIn })
-  );
   helpers.getData({
-    data: { ...req.query, userLoggedIn },
+    data: req.query,
     res,
     countMethod: new Post().getFollowingPostsCount,
     dataMethod: new Post().getFollowingPostsData,
@@ -79,14 +76,23 @@ exports.updatePost = async (req, res) => {
 };
 
 exports.deletePost = async (req, res) => {
+  console.log(req.body);
+
+  // fs.unlink(directoryPath + fileName, (err) => {
+  //   if (err) {
+  //     throw err;
+  //   }
+
+  //   console.log("Delete File successfully.");
+  // });
+
   helpers.deleteData({ model: new Post(), type: "post", req, res });
 };
 
 exports.getSinglePost = async (req, res) => {
-  const userLoggedIn = req.userLoggedIn;
-  const { postId } = req.query;
+  const { postId, userId } = req.query;
   try {
-    const response = await new Post().getSinglePost(postId, userLoggedIn);
+    const response = await new Post().getSinglePost(postId, userId);
     const data = response[0][0];
     if (data.postId === null) {
       throw new Error("Post is not found");
@@ -98,38 +104,37 @@ exports.getSinglePost = async (req, res) => {
 };
 
 exports.getNotifications = async (req, res) => {
-  const userLoggedIn = req.userLoggedIn;
-  const { page, pageSize } = req.query;
+  const { page, pageSize, identifier } = req.query;
   const offset = page * pageSize - pageSize;
   try {
     const postLikes = await new User().getPostLikesNotifications(
-      userLoggedIn,
+      identifier,
       pageSize,
       offset
     );
     const postLikesCount = await new User().getPostsLikesNotificationsCount(
-      userLoggedIn
+      identifier
     );
 
     const comments = await new User().getCommentsNotifications(
-      userLoggedIn,
+      identifier,
       pageSize,
       offset
     );
     const commentsCount = await new User().getCommentsNotificationsCount(
-      userLoggedIn
+      identifier
     );
 
     const commentLikes = await new User().getCommentsLikesNotifications(
-      userLoggedIn,
+      identifier,
       pageSize,
       offset
     );
     const commentLikesCount =
-      await new User().getCommentLikesNotificationsCount(userLoggedIn);
+      await new User().getCommentLikesNotificationsCount(identifier);
 
     const followers = await new User().getFollowingNotifications(
-      userLoggedIn,
+      identifier,
       offset
     );
 

@@ -4,9 +4,8 @@ const User = require("../model/User");
 const helpers = require("./helpers");
 
 exports.getAllPosts = async (req, res) => {
-  const userLoggedIn = req.userLoggedIn;
   helpers.getData({
-    data: { ...req.query, userLoggedIn },
+    data: req.query,
     res,
     dataMethod: new Model().getPostsData,
     countMethod: new Post().getCount,
@@ -15,9 +14,8 @@ exports.getAllPosts = async (req, res) => {
 };
 
 exports.getAllUsers = async (req, res) => {
-  const userLoggedIn = req.userLoggedIn;
   helpers.getData({
-    data: { ...req.query, userLoggedIn },
+    data: req.query,
     res,
     dataMethod: new User().getAllUsers,
     countMethod: new User().getUsersCount,

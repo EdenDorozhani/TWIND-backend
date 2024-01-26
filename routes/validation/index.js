@@ -97,7 +97,7 @@ exports.changePasswordValidationSchema = [
     .matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/),
 ];
 
-exports.newPasswordValidationSchema = [
+exports.configureEmailValidationSchema = [
   body("email")
     .trim()
     .notEmpty()
@@ -110,10 +110,6 @@ exports.newPasswordValidationSchema = [
         throw new Error("incorrect email");
       }
     }),
-  body("newPassword")
-    .trim()
-    .notEmpty()
-    .matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/),
 ];
 
 exports.changeEmailValidationSchema = [

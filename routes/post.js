@@ -5,7 +5,7 @@ const { commentValidationSchema } = require("./validation");
 
 const postController = require("../controller/post");
 
-router.get("/getComments", isAuth, postController.getComments);
+router.get("/getComments", postController.getComments);
 
 router.get("/getReplies", isAuth, postController.getReplies);
 

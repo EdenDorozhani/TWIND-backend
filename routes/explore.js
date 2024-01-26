@@ -6,8 +6,8 @@ const router = express.Router();
 
 const isAuth = require("../middleware/is-auth");
 
-router.get("/getAllPosts", isAuth, exploreController.getAllPosts);
+router.get("/getAllPosts", exploreController.getAllPosts);
 
-router.get("/getAllUsers", isAuth, exploreController.getAllUsers);
+router.get("/getAllUsers", exploreController.getAllUsers);
 
 module.exports = router;

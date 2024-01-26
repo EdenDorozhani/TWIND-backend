@@ -1,32 +1,19 @@
 const jwt = require("jsonwebtoken");
+const Response = require("../model/Response");
 
 module.exports = (req, res, next) => {
   const token = req.headers.authorization;
   if (!token) {
-    return res.json({
-      error: { code: 500, message: "User not authenticated" },
-    });
+    return res.status(500).send(new Response(false, "User not authenticated"));
   }
-
   const tokenWithoutBearer = token.replace("Bearer ", "");
-
-  if (tokenWithoutBearer) {
-    try {
-      const validToken = jwt.verify(
-        tokenWithoutBearer,
-        "somesupersecretsecret"
-      );
-      if (validToken) {
-        req.userLoggedIn = validToken.userId;
-        return next();
-      }
-    } catch (err) {
-      err.code = 401;
-      return res.json({ error: err });
+  try {
+    const validToken = jwt.verify(tokenWithoutBearer, "somesupersecretsecret");
+    if (validToken) {
+      req.userLoggedIn = validToken.userId;
+      return next();
     }
-  } else {
-    return res.json({
-      error: { code: 500, message: "User not authenticated" },
-    });
+  } catch (err) {
+    return res.status(401).send(new Response(false, "Token Expired"));
   }
 };
