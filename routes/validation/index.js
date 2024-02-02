@@ -3,11 +3,12 @@ const User = require("../../model/User");
 const bcrypt = require("bcryptjs");
 
 exports.signupValidationSchema = [
-  body("name").trim().notEmpty().isString().isLength({ min: 3, max: 20 }),
-  body("lastname").trim().notEmpty().isString().isLength({ min: 3, max: 20 }),
+  body("name").trim().notEmpty().isAlpha().isLength({ min: 2, max: 30 }),
+  body("lastname").trim().notEmpty().isAlpha().isLength({ min: 2, max: 30 }),
   body("username")
     .trim()
     .notEmpty()
+    .isLength({ max: 30, min: 2 })
     .matches(/^[a-zA-Z0-9](?!.*[_.]{2})[a-zA-Z0-9._]{0,28}[a-zA-Z0-9]$/)
     .custom(async (value) => {
       const user = await new User().getOne("username", value);
@@ -48,18 +49,36 @@ exports.managePostValidationSchema = [
   body("postImage")
     .custom((value, { req }) => {
       const imageUrl = req.body.postImage;
+      const file = req.files?.postImage?.[0];
       if (typeof imageUrl === "string") {
         return true;
-      } else if (!imageUrl && req.files) {
+      } else if (!imageUrl && !!file) {
         return true;
       } else if (req.files.postImage[0].size > 31457280) {
         return false;
+      } else if (!file && !imageUrl) {
+        return false;
       }
     })
-    .withMessage("file should be not empty and be smaller than 30 MB"),
+    .withMessage("file should be of type image and smaller than 30 MB"),
 ];
 
 exports.editProfileValidationSchema = [
+  body("userImgURL")
+    .custom((value, { req }) => {
+      const imageUrl = req.body.userImgURL;
+      const file = req.files?.userImgURL?.[0];
+      if (typeof imageUrl === "string") {
+        return true;
+      } else if (!imageUrl && !!file) {
+        return true;
+      } else if (req.files.userImgURL[0].size > 31457280) {
+        return false;
+      } else if (!file && !imageUrl) {
+        return false;
+      }
+    })
+    .withMessage("file should be of type image and smaller than 30 MB"),
   body("name").trim().notEmpty().isString().isLength({ min: 3, max: 20 }),
   body("lastname").trim().notEmpty().isString().isLength({ min: 3, max: 20 }),
   body("username")
@@ -97,7 +116,7 @@ exports.changePasswordValidationSchema = [
     .matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/),
 ];
 
-exports.configureEmailValidationSchema = [
+exports.resetPasswordValidationSchema = [
   body("email")
     .trim()
     .notEmpty()
@@ -105,7 +124,6 @@ exports.configureEmailValidationSchema = [
     .custom(async (value) => {
       const response = await new User().getOne("users.email", value);
       const user = response[0][0];
-      console.log(response);
       if (!user) {
         throw new Error("incorrect email");
       }
@@ -121,6 +139,7 @@ exports.changeEmailValidationSchema = [
       const userId = req.userLoggedIn;
       const response = await new User().getOne("email", value);
       const user = response[0][0];
+      console.log(user);
       if (!user && user?.userId !== userId) {
         throw new Error("incorrect email");
       }
@@ -140,6 +159,6 @@ exports.changeEmailValidationSchema = [
 exports.commentValidationSchema = [
   body("description")
     .notEmpty()
-    .isLength({ max: 2200 })
+    .isLength({ max: 200 })
     .withMessage("Comment must be below 200 characters."),
 ];

@@ -10,7 +10,11 @@ const router = express.Router();
 
 router.get("/getUserLoggedInData", isAuth, homeController.getUserData);
 
-router.get("/getFollowingPostsData", homeController.getFollowingPostsData);
+router.get(
+  "/getFollowingPostsData",
+  isAuth,
+  homeController.getFollowingPostsData
+);
 
 router.get("/getSinglePost", homeController.getSinglePost);
 

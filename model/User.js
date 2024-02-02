@@ -18,27 +18,27 @@ module.exports = class User extends Model {
   getUsersCount(data) {
     let sql = `SELECT COUNT(*)
     FROM users
-     WHERE users.username LIKE '${data.value}%'
-      AND NOT users.userId = ${data.userLoggedIn}
+     WHERE users.username LIKE '%${data.value}%'
       `;
-    return db.execute(sql);
+    let values = [data.userLoggedIn];
+
+    return db.execute(sql, values);
   }
 
   getAllUsers(data) {
     let sql = `
         SELECT users.*, followers.followId,
-        IFNULL(SUM(CASE WHEN followers.followerId = ${
-          data.userLoggedIn
-        } THEN 1 ELSE 0 END), 0) AS followedByUser
+        IFNULL(SUM(CASE WHEN followers.followerId = ? THEN 1 ELSE 0 END), 0) AS followedByUser
         FROM users 
-        LEFT JOIN followers ON users.userId = followers.followingId AND followers.followerId = ${
-          data.userLoggedIn
-        }
-        WHERE users.username LIKE '${data.value}%' 
+        LEFT JOIN followers ON users.userId = followers.followingId AND followers.followerId = ?
+        WHERE users.username LIKE '%${data.value}%'  
         GROUP BY users.userId,followers.followId
-        LIMIT ${+data.pageSize} OFFSET ${data.offset};
+        ORDER BY users.username LIKE '${data.value}%' DESC
+        LIMIT ? OFFSET ${+data.offset};
     `;
-    return db.execute(sql);
+    let values = [data.userLoggedIn, data.userLoggedIn, data.pageSize];
+
+    return db.execute(sql, values);
   }
 
   getUserData(username, userId, userLoggedIn) {
@@ -54,7 +54,13 @@ module.exports = class User extends Model {
   }
 
   getPostLikesNotifications(userId, itemsPerPage, offset) {
-    let sql = `SELECT 'postsLikes' AS type, postsLikes.likeId AS _key, posts.postImage, postsLikes.createdAt, users.username, users.userImgURL,posts.postId,
+    let sql = `SELECT 
+    'postsLikes' AS type, 
+    posts.postImage, 
+    postsLikes.createdAt, 
+    users.username, 
+    users.userImgURL,
+    posts.postId,
     (
     SELECT COUNT (*) - 1
     FROM postsLikes 
@@ -78,7 +84,8 @@ module.exports = class User extends Model {
   }
 
   getPostsLikesNotificationsCount(userId) {
-    let sql = ` SELECT COUNT(*) as postsLikesCount
+    let sql = ` SELECT 
+    COUNT(*) as postsLikesCount
     FROM postsLikes 
     LEFT JOIN posts ON postsLikes.postId = posts.postId 
     LEFT JOIN users ON postsLikes.userId = users.userId
@@ -97,7 +104,6 @@ module.exports = class User extends Model {
   getCommentsNotifications(userId, itemsPerPage, offset) {
     let sql = `SELECT 
     'comments' AS type,
-    comments.commentId AS _key,
     users.username,
     users.userImgURL, 
     posts.postImage,
@@ -130,7 +136,8 @@ module.exports = class User extends Model {
   }
 
   getCommentsNotificationsCount(userId) {
-    let sql = `SELECT COUNT(*) as commentsCount
+    let sql = `SELECT 
+    COUNT(*) as commentsCount
     FROM comments
     LEFT JOIN users ON comments.userId = users.userId
     LEFT JOIN  posts ON comments.postId = posts.postId
@@ -152,7 +159,6 @@ module.exports = class User extends Model {
     let sql = `
     SELECT 
     'commentLikes' AS type, 
-    commentLikes.likeId AS _key,
     commentLikes.userId, 
     posts.postId, 
     commentLikes.createdAt, 
@@ -184,7 +190,8 @@ module.exports = class User extends Model {
   }
 
   getCommentLikesNotificationsCount(userId) {
-    let sql = ` SELECT COUNT(*) as commentLikesCount
+    let sql = ` SELECT 
+    COUNT(*) as commentLikesCount
     FROM commentLikes 
     LEFT JOIN comments ON commentLikes.commentId = comments.commentId
     LEFT JOIN users ON commentLikes.userId = users.userId
@@ -202,7 +209,12 @@ module.exports = class User extends Model {
 
   getFollowingNotifications(userId, offset) {
     let sql = `
-    SELECT 'followers' AS type, users.username,followers.createdAt,  users.userImgURL, (SELECT COUNT(*) - 1 FROM followers WHERE followers.followingId = 
+    SELECT 
+    'followers' AS type,
+    users.username,
+    followers.createdAt,
+    users.userImgURL, 
+    (SELECT COUNT(*) - 1 FROM followers WHERE followers.followingId = 
     ${userId}) AS others
     FROM followers
     LEFT JOIN users ON followers.followerId = users.userId

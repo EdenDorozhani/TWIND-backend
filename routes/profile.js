@@ -26,10 +26,10 @@ router.post(
 );
 
 router.post(
-  "/changePassword",
+  "/changePasswordFromProfile",
   isAuth,
   changePasswordValidationSchema,
-  profileController.changePassword
+  profileController.changePasswordFromProfile
 );
 
 router.post(

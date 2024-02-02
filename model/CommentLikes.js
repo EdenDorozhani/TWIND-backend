@@ -13,9 +13,18 @@ module.exports = class CommentLikes extends Comment {
     FROM commentLikes 
      LEFT JOIN users ON users.userId = commentLikes.userId
      LEFT JOIN followers ON followers.followingId = commentLikes.userId
-     WHERE commentLikes.commentId = ${data.identifier}
+     WHERE commentLikes.commentId = ? AND commentLikes.likeId < ?
      GROUP BY users.userId, commentLikes.likeId
-     LIMIT ${+data.pageSize} OFFSET ${data.offset}`;
-    return db.query(sql, [data.userLoggedIn]);
+     ORDER BY commentLikes.likeId DESC
+     LIMIT ?`;
+
+    let values = [
+      data.userLoggedIn,
+      data.identifier,
+      !!data.lastElementId ? data.lastElementId : data.latestRecordId,
+      data.pageSize,
+    ];
+
+    return db.execute(sql, values);
   }
 };

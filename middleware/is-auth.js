@@ -4,7 +4,7 @@ const Response = require("../model/Response");
 module.exports = (req, res, next) => {
   const token = req.headers.authorization;
   if (!token) {
-    return res.status(500).send(new Response(false, "User not authenticated"));
+    return res.status(401).send(new Response(false, "User not authenticated"));
   }
   const tokenWithoutBearer = token.replace("Bearer ", "");
   try {

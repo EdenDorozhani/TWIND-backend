@@ -24,8 +24,9 @@ app.use((req, res, next) => {
 });
 
 app.use("/images", express.static(path.join(__dirname, "images")));
+app.use("/defaultImg", express.static(path.join(__dirname, "defaultImg")));
 
-const fileStoragePostImages = multer.diskStorage({
+const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "images");
   },
@@ -37,7 +38,17 @@ const fileStoragePostImages = multer.diskStorage({
   },
 });
 
-const multerUpload = multer({ storage: fileStoragePostImages });
+const imageFileFilter = (req, file, cb) => {
+  if (!file.mimetype.startsWith("image/")) {
+    return cb(null, false);
+  }
+  cb(null, true);
+};
+
+const multerUpload = multer({
+  storage: fileStorage,
+  fileFilter: imageFileFilter,
+});
 
 app.use(multerUpload.fields([{ name: "postImage" }, { name: "userImgURL" }]));
 

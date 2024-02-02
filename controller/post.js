@@ -30,10 +30,13 @@ exports.postComment = async (req, res) => {
     });
     const addComment = await new Comment().addData(dataToInsert);
     const commentId = addComment[0].insertId;
-    const commentData = await new Comment().getAddedCommentData(commentId);
-    const responseData = commentData[0][0];
+    const responseData = await new Comment().getAddedCommentData(commentId);
+    let commentData = responseData[0][0];
+    if (!responseData.reply) {
+      commentData = { ...commentData, totalReplies: 0 };
+    }
     await res.json(
-      new Response(true, "comment added successfully", responseData)
+      new Response(true, "comment added successfully", commentData)
     );
   } catch (err) {
     res.status(500).send(new Response(false, err.message, errors.array()));
@@ -47,6 +50,8 @@ exports.getComments = async (req, res) => {
     dataMethod: new Comment().getAllComments,
     module: "Comments",
     res,
+    key: "commentId",
+    latestRecordMethod: new Comment(),
   });
 };
 
@@ -72,6 +77,8 @@ exports.getPostsLikes = async (req, res) => {
     dataMethod: new PostsLikes().getLikes,
     module: "postLikes",
     res,
+    key: "likeId",
+    latestRecordMethod: new PostsLikes(),
   });
 };
 
@@ -83,5 +90,7 @@ exports.getCommentsLikes = async (req, res) => {
     dataMethod: new CommentLikes().getCommentsLikes,
     module: "commentLikes",
     res,
+    key: "likeId",
+    latestRecordMethod: new CommentLikes(),
   });
 };

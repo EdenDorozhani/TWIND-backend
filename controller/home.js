@@ -2,7 +2,6 @@ const { validationResult } = require("express-validator");
 const Post = require("../model/Post");
 const Response = require("../model/Response");
 const User = require("../model/User");
-const fs = require("fs");
 
 const helpers = require("./helpers");
 
@@ -20,19 +19,24 @@ exports.getFollowingPostsData = async (req, res) => {
     countMethod: new Post().getFollowingPostsCount,
     dataMethod: new Post().getFollowingPostsData,
     module: "Posts",
+    latestRecordMethod: new Post(),
+    key: "postId",
   });
 };
 
 exports.createPost = async (req, res) => {
   const caption = req.body.caption;
   const location = req.body.location;
-  const postImage = req.files.postImage[0].path;
+  const postImage = req.files?.postImage?.[0].path;
   const createdAt = new Date().toISOString();
   const creatorId = req.userLoggedIn;
+  const errors = validationResult(req);
   try {
-    const errors = validationResult(req);
     if (!errors.isEmpty()) {
       throw new Error("couldn't post, maybe file is more than 30 MB");
+    }
+    if (!postImage) {
+      return res.status(500).json({ message: "Only image files are allowed" });
     }
     const dataToSave = { postImage, caption, createdAt, location, creatorId };
     await new Post().addData(dataToSave);
@@ -44,48 +48,24 @@ exports.createPost = async (req, res) => {
 };
 
 exports.updatePost = async (req, res) => {
-  const prefixToRemove = "http://localhost:3131/";
-  const { postId } = req.query;
-  const file = req.files?.postImage?.[0].path;
-  const imageUrl = req.body.postImage;
-  let url;
-  if (!!imageUrl && imageUrl.startsWith(prefixToRemove)) {
-    url = imageUrl.substring(prefixToRemove.length);
-  } else {
-    url = imageUrl;
-  }
-  const image = file ? file : url;
-  const errors = validationResult(req);
-  const obj = { ...req.body, postImage: image };
-  try {
-    if (!errors.isEmpty()) {
-      throw new Error("cannot update post");
-    }
-    await new Post().updateData(obj, postId);
-    res.json(
-      new Response(
-        true,
-        `post with id:${postId} has been updated successfully`,
-        obj
-      )
-    );
-  } catch (err) {
-    let response = new Response(false, err.message, errors.array());
-    res.status(500).send(response);
-  }
+  helpers.updateData({
+    imageKey: "postImage",
+    primaryKey: "postId",
+    type: "post",
+    classObj: new Post(),
+    req,
+    res,
+  });
 };
 
 exports.deletePost = async (req, res) => {
-  console.log(req.body);
-
-  // fs.unlink(directoryPath + fileName, (err) => {
-  //   if (err) {
-  //     throw err;
-  //   }
-
-  //   console.log("Delete File successfully.");
-  // });
-
+  helpers.deleteImages({
+    field: "postId",
+    model: new Post(),
+    identifier: req.query.identifier,
+    imageField: "postImage",
+    res,
+  });
   helpers.deleteData({ model: new Post(), type: "post", req, res });
 };
 
@@ -104,38 +84,38 @@ exports.getSinglePost = async (req, res) => {
 };
 
 exports.getNotifications = async (req, res) => {
-  const { page, pageSize, identifier } = req.query;
+  const { page, pageSize, userLoggedIn } = req.query;
   const offset = page * pageSize - pageSize;
   try {
     const postLikes = await new User().getPostLikesNotifications(
-      identifier,
+      userLoggedIn,
       pageSize,
-      offset
+      +offset
     );
     const postLikesCount = await new User().getPostsLikesNotificationsCount(
-      identifier
+      userLoggedIn
     );
 
     const comments = await new User().getCommentsNotifications(
-      identifier,
+      userLoggedIn,
       pageSize,
-      offset
+      +offset
     );
     const commentsCount = await new User().getCommentsNotificationsCount(
-      identifier
+      userLoggedIn
     );
 
     const commentLikes = await new User().getCommentsLikesNotifications(
-      identifier,
+      userLoggedIn,
       pageSize,
-      offset
+      +offset
     );
     const commentLikesCount =
-      await new User().getCommentLikesNotificationsCount(identifier);
+      await new User().getCommentLikesNotificationsCount(userLoggedIn);
 
     const followers = await new User().getFollowingNotifications(
-      identifier,
-      offset
+      userLoggedIn,
+      +offset
     );
 
     const notificationsCount =

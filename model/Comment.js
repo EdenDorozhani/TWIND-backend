@@ -10,9 +10,7 @@ module.exports = class Comment extends Post {
     let sql = `
     SELECT comments.*, users.userImgURL, users.username,
     COUNT(commentLikes.commentId) AS commentsLikeCount,
-    IFNULL(SUM(CASE WHEN commentLikes.userId = ${
-      data.userLoggedIn
-    } THEN 1 ELSE 0 END), 0) AS likedByUser,
+    IFNULL(SUM(CASE WHEN commentLikes.userId = ? THEN 1 ELSE 0 END), 0) AS likedByUser,
     MAX(replyCount.replyCount) AS totalReplies
     FROM comments
     LEFT JOIN users ON comments.userId = users.userId
@@ -20,44 +18,50 @@ module.exports = class Comment extends Post {
     LEFT JOIN (
     SELECT comments.reply, COUNT(*) AS replyCount
     FROM comments
-    WHERE postId = ${data.identifier} AND comments.reply IS NOT NULL
+    WHERE postId = ? AND comments.reply IS NOT NULL
     GROUP BY comments.reply) AS replyCount ON comments.commentId = replyCount.reply
-    WHERE comments.postId = ${data.identifier} AND comments.reply IS NULL
+    WHERE (comments.postId = ? AND comments.reply IS NULL) AND comments.commentId < ?
     GROUP BY comments.commentId
     ORDER BY comments.commentId DESC
-    LIMIT ${+data.pageSize} OFFSET ${data.offset};
+    LIMIT ?;
 `;
-    return db.execute(sql);
+    let values = [
+      data.userLoggedIn,
+      data.identifier,
+      data.identifier,
+      !!data.lastElementId ? data.lastElementId : data.latestRecordId,
+      data.pageSize,
+    ];
+    return db.execute(sql, values);
   };
 
   getReplies = (data) => {
     let sql = `
     SELECT comments.*, users.userImgURL, users.username,
     COUNT(commentLikes.commentId) AS commentsLikeCount,
-    IFNULL(SUM(CASE WHEN commentLikes.userId = ${
-      data.userLoggedIn
-    } THEN 1 ELSE 0 END), 0) AS likedByUser
+    IFNULL(SUM(CASE WHEN commentLikes.userId = ? THEN 1 ELSE 0 END), 0) AS likedByUser
     FROM comments
     LEFT JOIN users ON comments.userId = users.userId
     LEFT JOIN commentLikes ON comments.commentId = commentLikes.commentId
-    WHERE comments.reply = ${data.identifier} AND comments.reply IS NOT NULL
+    WHERE comments.reply = ? AND comments.reply IS NOT NULL
     GROUP BY comments.commentId
     ORDER BY createdAt DESC
-    LIMIT ${+data.pageSize} OFFSET ${data.offset};           
+    LIMIT ? OFFSET ${data.offset};           
   `;
-    return db.execute(sql);
+    const values = [data.userLoggedIn, data.identifier, data.pageSize];
+    return db.execute(sql, values);
   };
 
   getAddedCommentData = (id) => {
     let sql = `SELECT comments.*, users.userImgURL, users.username 
         FROM comments 
         LEFT JOIN users ON comments.userId = users.userId 
-        WHERE comments.commentId = ${id}`;
-    return db.execute(sql);
+        WHERE comments.commentId = ?`;
+    return db.execute(sql, [id]);
   };
 
   getCommentsCount = (data) => {
-    let sql = `SELECT COUNT(*) FROM comments WHERE comments.reply IS NULL AND comments.postId = ${data.identifier}`;
-    return this.db.execute(sql);
+    let sql = `SELECT COUNT(*) FROM comments WHERE comments.reply IS NULL AND comments.postId = ?`;
+    return this.db.execute(sql, [data.identifier]);
   };
 };

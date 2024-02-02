@@ -5,7 +5,7 @@ const authController = require("../controller/auth");
 const {
   signupValidationSchema,
   loginValidationSchema,
-  configureEmailValidationSchema,
+  resetPasswordValidationSchema,
 } = require("./validation");
 
 const router = express.Router();
@@ -15,9 +15,9 @@ router.post("/signup", signupValidationSchema, authController.signup);
 router.post("/login", loginValidationSchema, authController.login);
 
 router.post(
-  "/configureEmail",
-  configureEmailValidationSchema,
-  authController.configureEmail
+  "/resetPassword",
+  resetPasswordValidationSchema,
+  authController.resetPassword
 );
 
 router.post("/changePassword", authController.changePassword);

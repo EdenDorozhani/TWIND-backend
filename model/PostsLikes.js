@@ -13,9 +13,18 @@ module.exports = class PostsLikes extends Post {
     FROM postsLikes 
      LEFT JOIN users ON users.userId = postsLikes.userId
      LEFT JOIN followers ON followers.followingId = postsLikes.userId
-     WHERE postsLikes.postId = ${data.identifier}
+     WHERE postsLikes.postId = ? AND postsLikes.likeId < ?
      GROUP BY users.userId, postsLikes.likeId
-     LIMIT ${+data.pageSize} OFFSET ${data.offset};`;
-    return db.query(sql, [data.userLoggedIn]);
+     ORDER BY postsLikes.likeId DESC
+     LIMIT ? ;`;
+
+    let values = [
+      data.userLoggedIn,
+      data.identifier,
+      !!data.lastElementId ? data.lastElementId : data.latestRecordId,
+      data.pageSize,
+    ];
+
+    return db.execute(sql, values);
   }
 };

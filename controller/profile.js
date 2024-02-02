@@ -18,6 +18,8 @@ exports.getProfilePostsData = async (req, res) => {
     res,
     countMethod: new Post().getCount,
     dataMethod: new Model().getPostsData,
+    latestRecordMethod: new Post(),
+    key: "postId",
     module: "ProfilePosts",
   });
 };
@@ -41,34 +43,20 @@ exports.getProfileUserData = async (req, res) => {
 };
 
 exports.editProfile = async (req, res) => {
-  const prefixToRemove = "http://localhost:3131/";
-  const userLoggedIn = req.body.userId;
-  const file = req.files?.userImgURL?.[0].path;
-  const imageUrl = req.body.userImgURL;
-  const errors = validationResult(req);
-  let url;
-  if (!!imageUrl && imageUrl.startsWith(prefixToRemove)) {
-    url = imageUrl.substring(prefixToRemove.length);
-  } else {
-    url = imageUrl;
-  }
-  const image = file ? file : url;
-  const obj = { ...req.body, userImgURL: image };
-  try {
-    if (!errors.isEmpty()) {
-      throw new Error("cannot create account");
-    }
-    await new User().updateData(obj, userLoggedIn);
-    res.json(new Response(true, "user profile has updated successfully", obj));
-  } catch (err) {
-    let response = new Response(false, err.message, errors.array());
-    res.status(500).send(response);
-  }
+  helpers.updateData({
+    imageKey: "userImgURL",
+    primaryKey: "userId",
+    type: "user",
+    classObj: new User(),
+    req,
+    res,
+  });
 };
 
-exports.changePassword = async (req, res) => {
+exports.changePasswordFromProfile = async (req, res) => {
   const { newPassword, userId } = req.body;
   const errors = validationResult(req);
+
   try {
     if (!errors.isEmpty()) {
       throw new Error("cannot change password");
@@ -85,6 +73,7 @@ exports.changePassword = async (req, res) => {
 exports.changeEmail = async (req, res) => {
   const userId = req.body.userId;
   const { newEmail } = req.body;
+  const errors = validationResult(req);
   try {
     if (!errors.isEmpty()) {
       throw new Error("cannot change email");
@@ -98,12 +87,19 @@ exports.changeEmail = async (req, res) => {
 };
 
 exports.deleteAccount = async (req, res) => {
+  helpers.deleteImages({
+    field: "userId",
+    imageField: "userImgURL",
+    model: new User(),
+    identifier: req.query.identifier,
+    res,
+  });
   helpers.deleteData({ model: new User(), type: "account", req, res });
 };
 
 exports.postFollower = async (req, res) => {
   const createdAt = new Date().toISOString();
-  const { followerId, userId, keyWord } = req.body;
+  const { followerId, followingId, keyWord } = req.body;
   if (keyWord === "follow") {
     try {
       const dataToInsert = new Follower().formatFormData({
@@ -119,7 +115,7 @@ exports.postFollower = async (req, res) => {
     try {
       const record = await new Follower().getRecord(
         followerId,
-        userId,
+        followingId,
         "followerId"
       );
       const recordId = record[0][0].followId;
@@ -133,7 +129,6 @@ exports.postFollower = async (req, res) => {
 
 exports.getFollowers = async (req, res) => {
   const userLoggedIn = req.userLoggedIn;
-
   helpers.getData({
     data: { ...req.query, userLoggedIn },
     res,

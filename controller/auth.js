@@ -6,7 +6,7 @@ const Response = require("../model/Response");
 const fs = require("node:fs");
 
 exports.signup = async (req, res) => {
-  const userImgURL = "images/Default_pfp.svg.png";
+  const userImgURL = "defaultImg/Default_pfp.svg.png";
   const formData = req.body;
   const errors = validationResult(req);
   try {
@@ -60,7 +60,7 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.configureEmail = async (req, res) => {
+exports.resetPassword = async (req, res) => {
   const { email } = req.body;
   const errors = validationResult(req);
   try {

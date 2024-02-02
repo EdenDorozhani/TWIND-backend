@@ -10,6 +10,8 @@ exports.getAllPosts = async (req, res) => {
     dataMethod: new Model().getPostsData,
     countMethod: new Post().getCount,
     module: "Posts",
+    latestRecordMethod: new Post(),
+    key: "postId",
   });
 };
 
