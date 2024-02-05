@@ -14,6 +14,6 @@ module.exports = (req, res, next) => {
       return next();
     }
   } catch (err) {
-    return res.status(401).send(new Response(false, "Token Expired"));
+    return res.status(401).send(new Response(false, "Invalid Token"));
   }
 };

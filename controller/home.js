@@ -74,11 +74,12 @@ exports.getSinglePost = async (req, res) => {
   try {
     const response = await new Post().getSinglePost(postId, userId);
     const data = response[0][0];
-    if (data.postId === null) {
+    if (!data) {
       throw new Error("Post is not found");
     }
     res.json(new Response(true, "data is fetched successfully", data));
   } catch (err) {
+    console.log(err.message);
     res.status(500).json(new Response(false, err.message));
   }
 };

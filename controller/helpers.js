@@ -2,7 +2,6 @@ const Response = require("../model/Response");
 const path = require("path");
 const fs = require("fs");
 const { validationResult } = require("express-validator");
-const { IncomingMessage } = require("http");
 
 exports.getData = async ({
   data,
@@ -23,7 +22,8 @@ exports.getData = async ({
       offset = +data.page * data.pageSize - data.pageSize;
     }
     const dataResponse = await dataMethod({ ...data, latestRecordId, offset });
-    const array = dataResponse[0];
+    let array = dataResponse[0];
+
     let lastElementId;
     if (array.length !== 0) {
       lastElementId = array[array.length - 1][key];

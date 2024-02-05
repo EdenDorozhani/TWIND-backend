@@ -20,21 +20,20 @@ module.exports = class User extends Model {
     FROM users
      WHERE users.username LIKE '%${data.value}%'
       `;
-    let values = [data.userLoggedIn];
 
-    return db.execute(sql, values);
+    return db.execute(sql);
   }
 
   getAllUsers(data) {
     let sql = `
-        SELECT users.*, followers.followId,
+        SELECT users.*,
         IFNULL(SUM(CASE WHEN followers.followerId = ? THEN 1 ELSE 0 END), 0) AS followedByUser
         FROM users 
         LEFT JOIN followers ON users.userId = followers.followingId AND followers.followerId = ?
         WHERE users.username LIKE '%${data.value}%'  
-        GROUP BY users.userId,followers.followId
+        GROUP BY users.userId
         ORDER BY users.username LIKE '${data.value}%' DESC
-        LIMIT ? OFFSET ${+data.offset};
+        LIMIT ?;
     `;
     let values = [data.userLoggedIn, data.userLoggedIn, data.pageSize];
 

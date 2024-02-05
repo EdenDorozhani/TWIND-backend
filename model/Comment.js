@@ -46,9 +46,9 @@ module.exports = class Comment extends Post {
     WHERE comments.reply = ? AND comments.reply IS NOT NULL
     GROUP BY comments.commentId
     ORDER BY createdAt DESC
-    LIMIT ? OFFSET ${data.offset};           
+    LIMIT ${data.pageSize} OFFSET ${data.offset};           
   `;
-    const values = [data.userLoggedIn, data.identifier, data.pageSize];
+    const values = [data.userLoggedIn, data.identifier];
     return db.execute(sql, values);
   };
 

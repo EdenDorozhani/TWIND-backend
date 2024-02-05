@@ -12,7 +12,13 @@ exports.getProfilePostsData = async (req, res) => {
     "username",
     req.query.identifier
   );
-  const countIdentifier = profileUserDataResponse[0][0].userId;
+  const countIdentifier = profileUserDataResponse[0][0]?.userId;
+
+  if (!countIdentifier) {
+    let response = new Response(false, "Not found");
+    return res.status(500).send(response);
+  }
+
   helpers.getData({
     data: { ...req.query, countIdentifier, field: "posts.creatorId" },
     res,
@@ -29,7 +35,10 @@ exports.getProfileUserData = async (req, res) => {
   const { username } = req.query;
   try {
     const response = await new User().getOne("username", username);
-    const userId = response[0][0].userId;
+    const userId = response[0][0]?.userId;
+    if (!userId) {
+      throw new Error("Not found");
+    }
     const profileUserDataResponse = await new User().getUserData(
       username,
       userId,
@@ -38,7 +47,8 @@ exports.getProfileUserData = async (req, res) => {
     const profileUserData = profileUserDataResponse[0][0];
     res.json(new Response(true, "", profileUserData));
   } catch (err) {
-    console.log(err);
+    let response = new Response(false, err.message, err);
+    res.status(500).send(response);
   }
 };
 

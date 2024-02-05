@@ -22,7 +22,7 @@ module.exports = class Follower extends Model {
     ORDER BY ${
       data.value ? `users.username LIKE '${data.value}%'` : `followers.followId`
     } DESC 
-    LIMIT ? OFFSET ${data.offset};
+    LIMIT ? ${data.value ? "" : `OFFSET ${+data.offset}`} ;
     `;
 
     let values = [data.userLoggedIn, data.identifier, data.pageSize];
@@ -34,7 +34,8 @@ module.exports = class Follower extends Model {
     let sql = `SELECT COUNT(*) 
     FROM followers
     INNER JOIN users ON users.userId = followers.followingId
-    WHERE followers.followerId = ?`;
+    WHERE followers.followerId = ?
+    `;
 
     const values = [data.identifier];
 
