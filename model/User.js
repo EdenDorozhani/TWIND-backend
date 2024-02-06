@@ -61,7 +61,7 @@ module.exports = class User extends Model {
     users.userImgURL,
     posts.postId,
     (
-    SELECT COUNT (*) - 1
+    SELECT COUNT(*) - 1
     FROM postsLikes 
     WHERE postsLikes.postId = posts.postId AND postsLikes.userId != ${userId}
     ) AS others
@@ -77,6 +77,7 @@ module.exports = class User extends Model {
     )
     AND postsLikes.createdAt >= DATE_ADD(CURDATE(), INTERVAL -3 MONTH)
     GROUP BY users.userId, postsLikes.likeId 
+    ORDER BY likeId
     LIMIT ${+itemsPerPage} OFFSET ${offset};
     `;
     return db.execute(sql, [userId]);
@@ -129,6 +130,7 @@ module.exports = class User extends Model {
     )
     AND comments.createdAt >= DATE_ADD(CURDATE(), INTERVAL -3 MONTH)
     GROUP BY comments.userId, posts.postId, comments.commentId
+    ORDER BY commentId
     LIMIT ${+itemsPerPage} OFFSET ${offset};
     `;
     return db.execute(sql, [userId, userId]);
@@ -183,6 +185,7 @@ module.exports = class User extends Model {
     )
     AND commentLikes.createdAt >= DATE_ADD(CURDATE(), INTERVAL -3 MONTH)
     GROUP BY commentLikes.userId, comments.commentId, commentLikes.likeId
+    ORDER BY likeId
     LIMIT ${+itemsPerPage} OFFSET ${offset};
  `;
     return db.execute(sql, [userId, userId]);
@@ -206,7 +209,7 @@ module.exports = class User extends Model {
     return db.execute(sql, [userId, userId]);
   }
 
-  getFollowingNotifications(userId, offset) {
+  getFollowingNotifications(userId) {
     let sql = `
     SELECT 
     'followers' AS type,
@@ -220,7 +223,7 @@ module.exports = class User extends Model {
     WHERE followers.followingId = ? 
     GROUP BY followers.followId
     ORDER BY followers.followId DESC
-    LIMIT ${1} OFFSET ${offset};
+    LIMIT ${1} ;
 `;
     return db.execute(sql, [userId]);
   }

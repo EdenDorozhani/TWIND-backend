@@ -85,7 +85,7 @@ exports.getSinglePost = async (req, res) => {
 };
 
 exports.getNotifications = async (req, res) => {
-  const { page, pageSize, userLoggedIn } = req.query;
+  const { page, pageSize, userLoggedIn, interrupt } = req.query;
   const offset = page * pageSize - pageSize;
   try {
     const postLikes = await new User().getPostLikesNotifications(
@@ -114,25 +114,35 @@ exports.getNotifications = async (req, res) => {
     const commentLikesCount =
       await new User().getCommentLikesNotificationsCount(userLoggedIn);
 
-    const followers = await new User().getFollowingNotifications(
-      userLoggedIn,
-      +offset
-    );
+    let followers;
+
+    if (interrupt === "false") {
+      followers = await new User().getFollowingNotifications(
+        userLoggedIn,
+        +offset
+      );
+    }
 
     const notificationsCount =
       postLikesCount[0][0].postsLikesCount +
       commentsCount[0][0].commentsCount +
       commentLikesCount[0][0].commentLikesCount;
 
-    const modifiedCount = notificationsCount
-      ? notificationsCount + 1
-      : notificationsCount;
+    const modifiedCount =
+      interrupt === "true" || followers
+        ? notificationsCount + 1
+        : notificationsCount;
 
-    const notificationsData = postLikes[0].concat(
-      comments[0],
-      commentLikes[0],
-      followers[0]
-    );
+    let notificationsData;
+    if (interrupt === "true") {
+      notificationsData = postLikes[0].concat(comments[0], commentLikes[0]);
+    } else {
+      notificationsData = postLikes[0].concat(
+        comments[0],
+        commentLikes[0],
+        followers?.[0]
+      );
+    }
 
     const responseData = {
       data: notificationsData,

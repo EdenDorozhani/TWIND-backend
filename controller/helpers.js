@@ -96,7 +96,12 @@ exports.updateData = async ({
     if (image) {
       const destinationPath =
         "/home/deni/Desktop/TWIND/twind-backend/" + imageFileName;
-      if (fs.existsSync(destinationPath) && !!filePath) {
+
+      if (
+        !imageFileName.startsWith("defaultImg") &&
+        fs.existsSync(destinationPath) &&
+        !!filePath
+      ) {
         fs.unlinkSync(destinationPath);
       }
     }
