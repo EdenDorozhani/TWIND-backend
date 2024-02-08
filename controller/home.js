@@ -3,13 +3,18 @@ const Post = require("../model/Post");
 const Response = require("../model/Response");
 const User = require("../model/User");
 
-const helpers = require("./helpers");
+const helpers = require("./helpers/helpers");
 
 exports.getUserData = async (req, res) => {
   const userLoggedIn = req.userLoggedIn;
-  const response = await new User().getOne("userId", userLoggedIn);
-  const userData = response[0][0];
-  res.json(new Response(true, "user data is fetched", userData));
+  try {
+    const response = await new User().getOne("userId", userLoggedIn);
+    const userData = response[0][0];
+    res.json(new Response(true, "user data is fetched", userData));
+  } catch (err) {
+    let response = new Response(false, err.message);
+    res.status(500).send(response);
+  }
 };
 
 exports.getFollowingPostsData = async (req, res) => {
@@ -30,13 +35,10 @@ exports.createPost = async (req, res) => {
   const postImage = req.files?.postImage?.[0].path;
   const createdAt = new Date().toISOString();
   const creatorId = req.userLoggedIn;
-  const errors = validationResult(req);
   try {
+    const errors = validationResult(req);
     if (!errors.isEmpty()) {
       throw new Error("couldn't post, maybe file is more than 30 MB");
-    }
-    if (!postImage) {
-      return res.status(500).json({ message: "Only image files are allowed" });
     }
     const dataToSave = { postImage, caption, createdAt, location, creatorId };
     await new Post().addData(dataToSave);
@@ -129,7 +131,7 @@ exports.getNotifications = async (req, res) => {
       commentLikesCount[0][0].commentLikesCount;
 
     const modifiedCount =
-      interrupt === "true" || followers
+      interrupt === "true" || followers[0].length !== 0
         ? notificationsCount + 1
         : notificationsCount;
 

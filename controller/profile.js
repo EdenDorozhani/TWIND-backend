@@ -5,7 +5,7 @@ const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const Follower = require("../model/Follower");
 const Model = require("../model/Model");
-const helpers = require("./helpers");
+const helpers = require("./helpers/helpers");
 
 exports.getProfilePostsData = async (req, res) => {
   const profileUserDataResponse = await new User().getOne(
@@ -64,7 +64,8 @@ exports.editProfile = async (req, res) => {
 };
 
 exports.changePasswordFromProfile = async (req, res) => {
-  const { newPassword, userId } = req.body;
+  const userId = req.userLoggedIn;
+  const { newPassword } = req.body;
   const errors = validationResult(req);
 
   try {

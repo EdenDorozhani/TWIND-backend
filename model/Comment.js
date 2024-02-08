@@ -10,7 +10,7 @@ module.exports = class Comment extends Post {
     let sql = `
     SELECT comments.*, users.userImgURL, users.username,
     COUNT(commentLikes.commentId) AS commentsLikeCount,
-    IFNULL(SUM(CASE WHEN commentLikes.userId = ? THEN 1 ELSE 0 END), 0) AS likedByUser,
+    MAX(CASE WHEN commentLikes.userId = ? THEN "1" ELSE "0" END) AS likedByUser,
     MAX(replyCount.replyCount) AS totalReplies
     FROM comments
     LEFT JOIN users ON comments.userId = users.userId
@@ -39,7 +39,7 @@ module.exports = class Comment extends Post {
     let sql = `
     SELECT comments.*, users.userImgURL, users.username,
     COUNT(commentLikes.commentId) AS commentsLikeCount,
-    IFNULL(SUM(CASE WHEN commentLikes.userId = ? THEN 1 ELSE 0 END), 0) AS likedByUser
+    MAX(CASE WHEN commentLikes.userId = ? THEN "1" ELSE "0" END) AS likedByUser
     FROM comments
     LEFT JOIN users ON comments.userId = users.userId
     LEFT JOIN commentLikes ON comments.commentId = commentLikes.commentId

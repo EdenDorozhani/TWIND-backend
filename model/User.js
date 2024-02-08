@@ -27,7 +27,7 @@ module.exports = class User extends Model {
   getAllUsers(data) {
     let sql = `
         SELECT users.*,
-        IFNULL(SUM(CASE WHEN followers.followerId = ? THEN 1 ELSE 0 END), 0) AS followedByUser
+        MAX(CASE WHEN followers.followerId = ? THEN "1" ELSE "0" END) AS followedByUser
         FROM users 
         LEFT JOIN followers ON users.userId = followers.followingId AND followers.followerId = ?
         WHERE users.username LIKE '%${data.value}%'  
@@ -41,9 +41,10 @@ module.exports = class User extends Model {
   }
 
   getUserData(username, userId, userLoggedIn) {
-    let sql = `SELECT users.*,
+    let sql = `
+    SELECT users.*,
     (SELECT COUNT(*) FROM followers WHERE followers.followerId = ?) as followersCount,
-    IFNULL(SUM(CASE WHEN followers.followerId = ? THEN 1 ELSE 0 END), 0) AS followedByUser
+    MAX(CASE WHEN followers.followerId = ? THEN "1" ELSE "0" END) AS followedByUser
     FROM users 
     LEFT JOIN followers ON users.userId = followers.followingId 
     WHERE users.username = ?
@@ -68,7 +69,9 @@ module.exports = class User extends Model {
     FROM postsLikes 
     LEFT JOIN posts ON postsLikes.postId = posts.postId 
     LEFT JOIN users ON postsLikes.userId = users.userId
-    WHERE posts.creatorId  = ? AND postsLikes.userId IS NOT NULL AND postsLikes.userId != ${userId} AND postsLikes.likeId IN 
+    WHERE posts.creatorId = ? 
+    AND postsLikes.userId != ${userId} 
+    AND postsLikes.likeId IN 
     (
         SELECT MAX(likeId) AS maxCommentId
         FROM postsLikes
@@ -89,7 +92,7 @@ module.exports = class User extends Model {
     FROM postsLikes 
     LEFT JOIN posts ON postsLikes.postId = posts.postId 
     LEFT JOIN users ON postsLikes.userId = users.userId
-    WHERE posts.creatorId  = ? AND postsLikes.userId IS NOT NULL AND postsLikes.userId != ${userId} AND postsLikes.likeId IN 
+    WHERE posts.creatorId  = ? AND postsLikes.userId != ${userId} AND postsLikes.likeId IN 
     (
         SELECT MAX(likeId) AS maxCommentId
         FROM postsLikes
@@ -120,7 +123,7 @@ module.exports = class User extends Model {
     LEFT JOIN users ON comments.userId = users.userId
     LEFT JOIN  posts ON comments.postId = posts.postId
     LEFT JOIN users AS postCreator ON posts.creatorId = postCreator.userId
-    WHERE posts.creatorId = ? AND comments.userId IS NOT NULL AND users.userId != ?
+    WHERE posts.creatorId = ? AND users.userId != ?
     AND comments.commentId IN 
     (
         SELECT MAX(commentId) AS maxCommentId
@@ -143,7 +146,7 @@ module.exports = class User extends Model {
     LEFT JOIN users ON comments.userId = users.userId
     LEFT JOIN  posts ON comments.postId = posts.postId
     LEFT JOIN users AS postCreator ON posts.creatorId = postCreator.userId
-    WHERE posts.creatorId = ? AND comments.userId IS NOT NULL AND users.userId != ?
+    WHERE posts.creatorId = ? AND users.userId != ?
     AND comments.commentId IN 
     (
         SELECT MAX(commentId) AS maxCommentId
@@ -176,7 +179,7 @@ module.exports = class User extends Model {
     LEFT JOIN comments ON commentLikes.commentId = comments.commentId
     LEFT JOIN users ON commentLikes.userId = users.userId
     LEFT JOIN posts ON comments.postId = posts.postId
-    WHERE comments.userId = ? AND commentLikes.userId IS NOT NULL AND commentLikes.userId  != ? AND commentLikes.likeId IN 
+    WHERE comments.userId = ? AND commentLikes.userId != ? AND commentLikes.likeId IN 
     (
         SELECT MAX(likeId)
         FROM commentLikes
@@ -198,7 +201,7 @@ module.exports = class User extends Model {
     LEFT JOIN comments ON commentLikes.commentId = comments.commentId
     LEFT JOIN users ON commentLikes.userId = users.userId
     LEFT JOIN posts ON comments.postId = posts.postId
-    WHERE comments.userId = ? AND commentLikes.userId IS NOT NULL AND commentLikes.userId != ? AND commentLikes.likeId IN 
+    WHERE comments.userId = ? AND commentLikes.userId != ? AND commentLikes.likeId IN 
     (
         SELECT MAX(likeId)
         FROM commentLikes

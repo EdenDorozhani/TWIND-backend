@@ -3,7 +3,7 @@ const PostsLikes = require("../model/PostsLikes");
 const Comment = require("../model/Comment");
 const Response = require("../model/Response");
 const CommentLikes = require("../model/CommentLikes");
-const helpers = require("./helpers");
+const helpers = require("./helpers/helpers");
 
 exports.updatePostLikes = async (req, res) => {
   const userId = req.body.userId;

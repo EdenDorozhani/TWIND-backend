@@ -9,7 +9,7 @@ module.exports = class CommentLikes extends Comment {
 
   getCommentsLikes(data) {
     let sql = `SELECT users.*, commentLikes.likeId,
-    IFNULL(SUM(CASE WHEN followers.followerId = ? THEN 1 ELSE 0 END), 0) AS followedByUser
+    MAX(CASE WHEN followers.followerId = ? THEN "1" ELSE "0" END) AS followedByUser
     FROM commentLikes 
      LEFT JOIN users ON users.userId = commentLikes.userId
      LEFT JOIN followers ON followers.followingId = commentLikes.userId

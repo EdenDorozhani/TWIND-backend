@@ -1,7 +1,7 @@
 const Model = require("../model/Model");
 const Post = require("../model/Post");
 const User = require("../model/User");
-const helpers = require("./helpers");
+const helpers = require("./helpers/helpers");
 
 exports.getAllPosts = async (req, res) => {
   helpers.getData({

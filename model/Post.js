@@ -51,8 +51,7 @@ module.exports = class Post extends Model {
     LEFT JOIN postsLikes ON posts.postId = postsLikes.postId
     LEFT JOIN followers ON posts.creatorId = followers.followingId 
     WHERE posts.postId = ?
-    GROUP BY
-    posts.postId, users.userId;
+    GROUP BY posts.postId;
   `;
 
     const values = [identifier, identifier, postId];

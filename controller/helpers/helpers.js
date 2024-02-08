@@ -1,4 +1,4 @@
-const Response = require("../model/Response");
+const Response = require("../../model/Response");
 const path = require("path");
 const fs = require("fs");
 const { validationResult } = require("express-validator");
@@ -16,6 +16,7 @@ exports.getData = async ({
     let latestRecordId;
     let offset;
     if (latestRecordMethod !== null) {
+      console.log("mir");
       const latestRecord = await latestRecordMethod.getTheLatestRecord(key);
       latestRecordId = latestRecord[0][0]?.[key] + 1;
     } else {
@@ -41,7 +42,6 @@ exports.getData = async ({
       })
     );
   } catch (err) {
-    console.log(err);
     res.status(500).send(new Response(false, "Something went wrong", err));
   }
 };
@@ -54,7 +54,7 @@ exports.updateLikes = async (body, id, userId, obj, res) => {
       await obj.addData(dataToInsert);
       res.json(new Response(true));
     } catch (err) {
-      console.log(err);
+      res.status(500).send(new Response(false, "Something went wrong", err));
     }
   } else {
     try {
@@ -63,7 +63,7 @@ exports.updateLikes = async (body, id, userId, obj, res) => {
       await obj.deleteData(recordId);
       res.json(new Response(true));
     } catch (err) {
-      console.log(err);
+      res.status(500).send(new Response(false, "Something went wrong", err));
     }
   }
 };
@@ -104,6 +104,8 @@ exports.updateData = async ({
       ) {
         fs.unlinkSync(destinationPath);
       }
+    } else {
+      throw new Error("no image uploaded");
     }
     //Determine response object
     let obj;
@@ -126,7 +128,6 @@ exports.updateData = async ({
       )
     );
   } catch (err) {
-    console.log(err);
     let response = new Response(false, "", errors.array());
     res.status(500).send(response);
   }
@@ -156,6 +157,7 @@ exports.deleteImages = async ({
   imageField,
   res,
 }) => {
+  console.log(__dirname);
   const response = await model.getOne(field, identifier);
   const imageFileName = response[0][0][imageField];
   const imagePath = path.join(
